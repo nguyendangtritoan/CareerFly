@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: Reset base styles */
+body {
+  background-color: #09090b;
+  /* matches zinc-950 */
+  color: #fafafa;
+}
