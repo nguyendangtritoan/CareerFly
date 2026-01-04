@@ -21,9 +21,9 @@ export default function LearnedBank({ className }) {
     if (isLoading) return <div className="p-4 text-xs text-zinc-500">Loading skills...</div>;
 
     return (
-        <div className={cn("p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900", className)}>
-            <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 mb-1 flex items-center gap-2">
-                <Cloud size={18} className="text-indigo-600 dark:text-indigo-400" /> Learned Bank
+        <div className={cn("p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900", className)}>
+            <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-1 flex items-center gap-2">
+                <Cloud size={18} className="text-text-primary dark:text-text-secondary" /> Learned Bank
             </h3>
             <p className="text-sm text-zinc-500 dark:text-zinc-500 mb-6">Visualizing your growing skill set.</p>
 
@@ -36,7 +36,7 @@ export default function LearnedBank({ className }) {
                     {tags.map(tag => (
                         <span
                             key={tag.id}
-                            className="font-mono transition-all duration-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-default text-zinc-700 dark:text-zinc-300"
+                            className="font-mono transition-all duration-300 hover:text-indigo-600 dark:hover:text-text-secondary cursor-default text-zinc-700 dark:text-zinc-300"
                             style={{
                                 fontSize: getFontSize(tag.usageCount, maxCount),
                                 opacity: 0.6 + (tag.usageCount / maxCount) * 0.4

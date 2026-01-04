@@ -16,7 +16,7 @@ export default function LogEntry({ log, onDelete }) {
             PlaceholderNode,
             Mention.configure({
                 HTMLAttributes: {
-                    class: 'text-indigo-400 font-bold bg-indigo-500/10 px-1 rounded',
+                    class: 'text-text-secondary font-bold bg-action-primary/10 px-1 rounded',
                 },
             })
         ],
@@ -37,7 +37,7 @@ export default function LogEntry({ log, onDelete }) {
 
     return (
         <div className="group relative pl-8 pb-8 transition-colors">
-            <div className="absolute -left-[4.5px] top-[5px] h-2 w-2 rounded-full border-2 border-white dark:border-zinc-950 bg-zinc-400 dark:bg-zinc-600 group-hover:bg-indigo-500 group-hover:scale-125 transition-all duration-300"></div>
+            <div className="absolute -left-[4.5px] top-[5px] h-2 w-2 rounded-full border-2 border-white dark:border-zinc-950 bg-zinc-400 dark:bg-zinc-600 group-hover:bg-action-primary group-hover:scale-125 transition-all duration-300"></div>
 
             <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-500 mb-2 flex items-center justify-between h-4">
                 <span>{new Date(dateIso).toLocaleString(undefined, {
@@ -48,7 +48,7 @@ export default function LogEntry({ log, onDelete }) {
                 </button>
             </div>
 
-            <div className="p-4 rounded-lg border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm">
+            <div className="p-4 rounded-lg border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900/50 shadow-sm">
                 <EditorContent editor={editor} />
             </div>
         </div>

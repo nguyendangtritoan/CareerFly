@@ -21,22 +21,33 @@ export default function Layout() {
     ];
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
+        <div className="fixed inset-0 flex w-full bg-canvas dark:bg-zinc-950 text-text-primary dark:text-zinc-50 p-2 gap-2 overflow-hidden">
             <CommandMenu />
             <MobileFab />
-            {/* Sidebar (Desktop) */}
+            {/* Sidebar (Desktop) - Bento Island Mode */}
             <aside className={cn(
-                "hidden md:flex flex-col border-r border-gray-200 dark:border-zinc-900 bg-white dark:bg-zinc-950/50 backdrop-blur-xl transition-all duration-300 z-50 sticky top-0 h-screen",
-                isSidebarOpen ? "w-64" : "w-16 items-center"
+                "hidden md:flex flex-col gap-2 h-full z-50 bg-transparent transition-all duration-300",
+                isSidebarOpen ? "w-64" : "w-16"
             )}>
-                <div className="p-4 flex items-center gap-2 border-b border-gray-200 dark:border-zinc-900 h-16">
-                    <div className="h-8 w-8 rounded-lg bg-indigo-600 shadow-lg shadow-indigo-500/20 flex items-center justify-center font-bold text-white">
-                        CF
-                    </div>
-                    {isSidebarOpen && <span className="font-bold text-lg tracking-tight">CareerFly</span>}
+                {/* Island 1: Header/Logo */}
+                <div className="gradient-pastel-animated rounded-2xl border border-border-subtle dark:border-zinc-900 shadow-card p-4 h-16 flex items-center gap-3 shrink-0">
+                    <img
+                        src="/logo.png"
+                        alt="CareerFly Logo"
+                        className="h-10 w-10 rounded-lg shadow-sm object-cover shrink-0 select-none"
+                    />
+                    {isSidebarOpen && (
+                        <span
+                            className="text-2xl text-[#4f8af1] animate-in fade-in duration-300 transform -rotate-2 origin-left"
+                            style={{ fontFamily: '"Permanent Marker", cursive' }}
+                        >
+                            CareerFly
+                        </span>
+                    )}
                 </div>
 
-                <nav className="flex-1 p-2 space-y-1">
+                {/* Island 2: Navigation */}
+                <nav className="gradient-pastel-animated rounded-2xl border border-border-subtle dark:border-zinc-900 shadow-card flex-1 p-2 space-y-1 overflow-y-auto overflow-x-hidden">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.href;
                         return (
@@ -44,48 +55,44 @@ export default function Layout() {
                                 key={item.href}
                                 to={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
+                                    "flex items-center gap-3 px-3 py-2 rounded-xl transition-colors duration-200 group relative focus:outline-none focus:ring-0 select-none",
                                     isActive
-                                        ? "bg-gray-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800"
-                                        : "text-zinc-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-300"
+                                        ? "bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-50 font-normal"
+                                        : "text-gray-500 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-zinc-300 font-normal active:bg-gray-100 dark:active:bg-zinc-800"
                                 )}
                             >
-                                <item.icon size={20} className={cn("transition-colors", isActive ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400")} />
+                                <item.icon size={20} className={cn("transition-colors", isActive ? "text-gray-900 dark:text-zinc-50" : "text-gray-500 dark:text-zinc-600 group-hover:text-gray-900 dark:group-hover:text-zinc-400")} />
                                 {isSidebarOpen && <span>{item.label}</span>}
                             </Link>
                         )
                     })}
 
-
                     <Link
                         to="/settings"
                         className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
+                            "flex items-center gap-3 px-3 py-2 rounded-xl transition-colors duration-200 group relative focus:outline-none focus:ring-0 select-none",
                             location.pathname === '/settings'
-                                ? "bg-gray-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800"
-                                : "text-zinc-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-300"
+                                ? "bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-50 font-normal"
+                                : "text-gray-500 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-zinc-300 font-normal active:bg-gray-100 dark:active:bg-zinc-800"
                         )}
                     >
-                        <Settings size={20} className={cn("transition-colors", location.pathname === '/settings' ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400")} />
+                        <Settings size={20} className={cn("transition-colors", location.pathname === '/settings' ? "text-gray-900 dark:text-zinc-50" : "text-gray-500 dark:text-zinc-600 group-hover:text-gray-900 dark:group-hover:text-zinc-400")} />
                         {isSidebarOpen && <span>Settings</span>}
                     </Link>
                 </nav>
 
-                <div className="p-4 border-t border-gray-200 dark:border-zinc-900 space-y-2">
-
-
+                {/* Island 3: Footer/User */}
+                <div className="gradient-pastel-animated rounded-2xl border border-border-subtle dark:border-zinc-900 shadow-card p-2 shrink-0">
                     <button
                         onClick={() => user ? signOut() : signInWithGoogle()}
                         className={cn(
-                            "flex items-center gap-3 px-3 py-2 w-full transition-colors rounded-lg",
-                            user
-                                ? "text-zinc-500 hover:text-red-400 hover:bg-red-500/10"
-                                : "text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10"
+                            "w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group",
+                            "text-gray-500 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-zinc-300"
                         )}
                     >
                         {user ? (
                             <>
-                                <LogOut size={20} />
+                                <LogOut size={20} className="text-gray-500 dark:text-zinc-600 group-hover:text-gray-900 dark:group-hover:text-zinc-400" />
                                 {isSidebarOpen && <span>Sign Out</span>}
                             </>
                         ) : (
@@ -98,13 +105,15 @@ export default function Layout() {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 relative flex flex-col bg-gray-50 dark:bg-zinc-950 min-w-0">
-                <Outlet />
+            {/* Main Content - Island Mode */}
+            <main className="flex-1 rounded-2xl border border-border-subtle dark:border-zinc-900 bg-[#efefe8] dark:bg-zinc-950/50 shadow-sm overflow-hidden relative h-full notebook-grid">
+                <div className="h-full overflow-y-auto scroll-smooth">
+                    <Outlet />
+                </div>
             </main>
 
             {/* Mobile Nav (Bottom) */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800/50 z-50 flex justify-around items-center px-4">
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-t border-border-subtle dark:border-zinc-800/50 z-50 flex justify-around items-center px-4">
                 {navItems.map((item) => {
                     const isActive = location.pathname === item.href;
                     return (
@@ -113,7 +122,7 @@ export default function Layout() {
                             to={item.href}
                             className={cn(
                                 "flex flex-col items-center justify-center p-1 transition-colors",
-                                isActive ? "text-indigo-400" : "text-zinc-600"
+                                isActive ? "text-text-secondary" : "text-zinc-600"
                             )}
                         >
                             <item.icon size={24} />

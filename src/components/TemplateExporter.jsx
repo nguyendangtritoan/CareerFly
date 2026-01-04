@@ -94,15 +94,15 @@ export default function TemplateExporter({ className }) {
     };
 
     return (
-        <div className={cn("p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm", className)}>
+        <div className={cn("p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900 shadow-sm", className)}>
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                    <FileText size={18} className="text-indigo-600 dark:text-indigo-400" /> Export Review
+                <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 flex items-center gap-2">
+                    <FileText size={18} className="text-text-primary dark:text-text-secondary" /> Export Review
                 </h3>
                 <select
                     value={selectedTemplate}
                     onChange={(e) => setSelectedTemplate(e.target.value)}
-                    className="bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded px-2 py-1 text-xs text-zinc-900 dark:text-zinc-300 focus:outline-none"
+                    className="bg-white dark:bg-zinc-950 border border-border-input dark:border-zinc-800 rounded px-2 py-1 text-xs text-zinc-900 dark:text-zinc-300 focus:outline-none"
                 >
                     {TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                 </select>
@@ -112,11 +112,11 @@ export default function TemplateExporter({ className }) {
                 <textarea
                     readOnly
                     value={content}
-                    className="w-full h-40 bg-gray-50 dark:bg-zinc-950/50 border border-gray-200 dark:border-zinc-800 rounded-lg p-3 text-xs font-mono text-zinc-700 dark:text-zinc-400 resize-none focus:outline-none"
+                    className="w-full h-40 bg-gray-50 dark:bg-zinc-950/50 border border-border-subtle dark:border-zinc-800 rounded-lg p-3 text-xs font-mono text-zinc-700 dark:text-zinc-400 resize-none focus:outline-none"
                 />
                 <button
                     onClick={handleCopy}
-                    className="absolute top-2 right-2 p-2 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-md transition-colors"
+                    className="absolute top-2 right-2 p-2 bg-tag-bg dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-md transition-colors"
                     title="Copy to Clipboard"
                 >
                     {copied ? <Check size={14} className="text-emerald-500 dark:text-emerald-400" /> : <Copy size={14} />}

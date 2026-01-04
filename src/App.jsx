@@ -26,7 +26,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen w-full bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans selection:bg-indigo-500/30 relative">
+        <div className="min-h-screen w-full bg-canvas dark:bg-zinc-950 text-text-primary dark:text-zinc-50 font-sans selection:bg-action-primary/10 relative">
 
           <Routes>
             <Route element={<Layout />}>

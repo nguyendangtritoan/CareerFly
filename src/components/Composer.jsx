@@ -168,13 +168,13 @@ export default function Composer({ onSave, className, initialContent }) {
     };
 
     return (
-        <div className={cn("relative group rounded-xl border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 shadow-sm", className)}>
+        <div className={cn("relative group rounded-card border border-border-input dark:border-zinc-800 bg-[#e8efe8] dark:bg-zinc-900 p-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 shadow-sm", className)}>
             <div className="min-h-[60px] relative">
                 {editor && (
                     <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
                         <button
                             onClick={handleSaveTemplate}
-                            className="flex items-center gap-1.5 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-3 py-1.5 rounded-lg shadow-xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-xs font-medium"
+                            className="flex items-center gap-1.5 bg-surface dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-3 py-1.5 rounded-lg shadow-xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-xs font-medium"
                         >
                             <Sparkles size={12} className="text-amber-500" />
                             Save as Template
@@ -189,7 +189,7 @@ export default function Composer({ onSave, className, initialContent }) {
                             editor.commands.focus();
                             setPrompt(null);
                         }}
-                        className="absolute top-10 left-0 right-0 mx-auto w-max animate-in fade-in slide-in-from-bottom-2 bg-indigo-600/90 hover:bg-indigo-600 text-white px-4 py-2 rounded-full shadow-xl text-sm font-medium flex items-center gap-2 backdrop-blur cursor-pointer z-10 transition-all hover:scale-105"
+                        className="absolute top-10 left-0 right-0 mx-auto w-max animate-in fade-in slide-in-from-bottom-2 bg-action-primary/90 hover:bg-action-primary text-white px-4 py-2 rounded-full shadow-xl text-sm font-medium flex items-center gap-2 backdrop-blur cursor-pointer z-10 transition-all hover:scale-105"
                     >
                         <Sparkles size={16} />
                         {prompt}
@@ -197,7 +197,7 @@ export default function Composer({ onSave, className, initialContent }) {
                 )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-zinc-800 gap-3">
+            <div className="flex flex-wrap items-center justify-between mt-3 pt-3 border-t border-border-subtle dark:border-zinc-800 gap-3">
                 <div className="flex items-center gap-2">
                     <Select
                         value={impact}
@@ -221,7 +221,7 @@ export default function Composer({ onSave, className, initialContent }) {
                     />
                     <button
                         onClick={() => setShowTemplateSelector(true)}
-                        className="flex items-center gap-1.5 bg-gray-100 dark:bg-zinc-800/50 hover:bg-gray-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 px-3 py-1.5 rounded-md text-xs font-medium transition-colors h-8"
+                        className="flex items-center gap-1.5 bg-tag-bg dark:bg-zinc-800/50 hover:bg-gray-200 dark:hover:bg-zinc-800 text-text-secondary dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 px-3 py-1.5 rounded-md text-xs font-medium transition-colors h-8"
                         title="Insert Template"
                     >
                         <LayoutTemplate size={14} />
@@ -230,7 +230,7 @@ export default function Composer({ onSave, className, initialContent }) {
                     <button
                         onClick={handleSave}
                         disabled={!editor || isEmpty}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-8 shadow-sm shadow-indigo-500/20"
+                        className="bg-action-primary hover:bg-action-hover text-white px-4 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-8 shadow-sm shadow-button/20"
                     >
                         Log Work
                     </button>

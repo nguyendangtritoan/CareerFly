@@ -7,117 +7,102 @@ export default {
   ],
   theme: {
     extend: {
-      // Font Family
+      // Font Family - Clean SaaS uses Inter
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
 
-      // Color System - Semantic tokens for light/dark modes
+      // Clean SaaS Color System - Monochromatic Neutral Palette
       colors: {
-        // Primary brand color
-        primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1', // Main indigo
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
-        },
+        // Canvas & Surface
+        canvas: '#F9FAFB',        // bg-gray-50 - App background
+        surface: '#FFFFFF',        // bg-white - Main card/container background
 
-        // Surface colors (backgrounds, cards)
-        surface: {
-          light: 'rgb(255, 255, 255)', // White for light mode
-          'light-secondary': 'rgb(249, 250, 251)', // Very light gray
-          DEFAULT: 'rgb(24, 24, 27)', // zinc-900 for dark mode
-          dark: 'rgb(9, 9, 11)', // zinc-950 for dark mode
-        },
+        // Text Hierarchy (Light Mode Primary)
+        'text-primary': '#101828',    // text-gray-900 - Headers, Task names, Active states
+        'text-secondary': '#475467',  // text-gray-700 - Column headers, Timestamps
+        'text-tertiary': '#667085',   // text-gray-500 - Icons, Placeholders, Empty states
 
-        // Border colors
-        border: {
-          light: 'rgb(212, 212, 216)', // gray-300
-          'light-subtle': 'rgb(229, 231, 235)', // gray-200
-          DEFAULT: 'rgb(39, 39, 42)', // zinc-800
-          dark: 'rgb(24, 24, 27)', // zinc-900
-        },
+        // Borders
+        'border-subtle': '#EAECF0',   // border-gray-200 - Dividers between rows
+        'border-input': '#D0D5DD',    // border-gray-300 - Input fields, dropdowns
 
-        // Text colors (hierarchy)
-        text: {
-          'primary-light': 'rgb(24, 24, 27)', // zinc-900
-          'secondary-light': 'rgb(82, 82, 91)', // zinc-600
-          'tertiary-light': 'rgb(113, 113, 122)', // zinc-500
-          'primary-dark': 'rgb(250, 250, 250)', // zinc-50
-          'secondary-dark': 'rgb(212, 212, 216)', // zinc-300
-          'tertiary-dark': 'rgb(161, 161, 170)', // zinc-400
-        },
+        // Action/Accent
+        'action-primary': '#101828',  // bg-gray-900 - Primary buttons
+        'action-hover': '#252D3D',    // Slightly lighter for hover
 
-        // Accent colors for impact levels
-        accent: {
-          'high': {
-            light: 'rgb(79, 70, 229)', // indigo-600
-            dark: 'rgb(129, 140, 248)', // indigo-400
-          },
-          'medium': {
-            light: 'rgb(2, 132, 199)', // sky-600
-            dark: 'rgb(56, 189, 248)', // sky-400
-          },
-          'low': {
-            light: 'rgb(113, 113, 122)', // zinc-500
-            dark: 'rgb(161, 161, 170)', // zinc-400
-          },
-        },
+        // Tag/Pill
+        'tag-bg': '#F2F4F7',         // bg-gray-100 - Category tag background
+        'tag-text': '#344054',       // text-gray-700 - Category tag text
 
-        // Status colors
-        success: {
-          light: 'rgb(22, 163, 74)', // green-600
-          dark: 'rgb(34, 197, 94)', // green-500
-        },
-        warning: {
-          light: 'rgb(234, 179, 8)', // yellow-500
-          dark: 'rgb(250, 204, 21)', // yellow-400
-        },
-        error: {
-          light: 'rgb(220, 38, 38)', // red-600
-          dark: 'rgb(248, 113, 113)', // red-400
+        // Hover States
+        'hover-bg': '#F9FAFB',       // bg-gray-50 - Row hover background
+
+        // Focus Ring
+        'focus-ring': '#F2F4F7',     // Faint focus ring
+
+        // Dark Mode Colors (keeping existing for dark mode support)
+        'dark': {
+          surface: 'rgb(24, 24, 27)',      // zinc-900
+          'surface-deep': 'rgb(9, 9, 11)', // zinc-950
+          border: 'rgb(39, 39, 42)',       // zinc-800
+          'text-primary': 'rgb(250, 250, 250)',   // zinc-50
+          'text-secondary': 'rgb(212, 212, 216)', // zinc-300
+          'text-tertiary': 'rgb(161, 161, 170)',  // zinc-400
         },
       },
 
-      // Typography Scale
+      // Typography Scale - Clean SaaS Specifications
       fontSize: {
-        'xs': ['0.75rem', { lineHeight: '1rem' }],
-        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
-        'base': ['1rem', { lineHeight: '1.5rem' }],
-        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
-        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
-        '2xl': ['1.5rem', { lineHeight: '2rem' }],
-        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        'xs': ['0.75rem', { lineHeight: '1rem', fontWeight: '400' }],      // 12px - Tags, small labels
+        'sm': ['0.875rem', { lineHeight: '1.25rem', fontWeight: '400' }],  // 14px - Base text
+        'base': ['1rem', { lineHeight: '1.5rem', fontWeight: '400' }],     // 16px
+        'lg': ['1.125rem', { lineHeight: '1.75rem', fontWeight: '500' }],  // 18px
+        'xl': ['1.25rem', { lineHeight: '1.75rem', fontWeight: '500' }],   // 20px
+        '2xl': ['1.5rem', { lineHeight: '2rem', fontWeight: '600' }],      // 24px - H2
+        '3xl': ['1.875rem', { lineHeight: '2.25rem', fontWeight: '700' }], // 30px - H1
       },
 
-      // Spacing Scale (extending defaults)
+      // Font Weights
+      fontWeight: {
+        normal: '400',   // Regular
+        medium: '500',   // Medium - Task titles, tags
+        semibold: '600', // Semibold
+        bold: '700',     // Bold - Headers
+      },
+
+      // Spacing Scale
       spacing: {
         '18': '4.5rem',
         '22': '5.5rem',
       },
 
-      // Border Radius Presets
+      // Border Radius - Clean SaaS Specifications
       borderRadius: {
-        'card': '0.75rem', // 12px - for cards
-        'button': '0.5rem', // 8px - for buttons
-        'input': '0.5rem', // 8px - for inputs
-        'tag': '0.375rem', // 6px - for tags/badges
+        'container': '12px',  // Main containers - Soft corners
+        'button': '8px',      // Buttons/Inputs - Precise corners
+        'input': '8px',       // Input fields
+        'tag': '999px',       // Tags/Pills - Fully rounded
+        'card': '12px',       // Alias for container
       },
 
-      // Box Shadow System (elevation)
+      // Box Shadow System - Clean SaaS Elevation
       boxShadow: {
-        'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-        'card-hover': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        'button': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        'dropdown': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        // Main card shadow
+        'card': '0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06)',
+
+        // Button shadow
+        'button': '0px 1px 2px rgba(16, 24, 40, 0.05)',
+
+        // Input shadow
+        'input': '0px 1px 2px rgba(16, 24, 40, 0.05)',
+
+        // Focus ring
+        'focus': '0 0 0 4px #F2F4F7',
+
+        // Dropdown/Modal
+        'dropdown': '0px 4px 6px -2px rgba(16, 24, 40, 0.03), 0px 12px 16px -4px rgba(16, 24, 40, 0.08)',
       },
 
       // Animation Durations
@@ -125,9 +110,9 @@ export default {
         '250': '250ms',
       },
 
-      // Additional utilities
-      backdropBlur: {
-        'xs': '2px',
+      // Minimum Heights
+      minHeight: {
+        'row': '72px', // Log entry row minimum height
       },
     },
   },

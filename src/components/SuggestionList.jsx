@@ -54,7 +54,7 @@ export default forwardRef((props, ref) => {
                     <button
                         className={cn(
                             "flex items-center w-full text-left px-2 py-1.5 text-sm rounded-md transition-colors",
-                            index === selectedIndex ? "bg-indigo-600 text-white" : "text-zinc-300 hover:bg-zinc-800"
+                            index === selectedIndex ? "bg-action-primary text-white" : "text-zinc-300 hover:bg-zinc-800"
                         )}
                         key={index}
                         onClick={() => selectItem(index)}

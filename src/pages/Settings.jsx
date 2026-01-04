@@ -29,29 +29,31 @@ export default function Settings() {
         <div className="max-w-2xl mx-auto py-8 px-4 space-y-8 animate-in fade-in duration-500">
             <div>
                 <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Settings</h1>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm">Manage your preferences and data.</p>
+                <p className="text-text-secondary dark:text-zinc-400 text-sm">Manage your preferences and data.</p>
             </div>
 
             {/* Appearance */}
             <section className="space-y-4">
                 <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-wider">Appearance</h2>
-                <div className="p-4 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 flex items-center justify-between gap-4">
+                <div className="p-4 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900/50 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 flex-1">
-                        <div className="p-2 bg-gray-100 dark:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400">
+                        <div className="p-2 bg-tag-bg dark:bg-zinc-800 rounded-lg text-text-secondary dark:text-zinc-400">
                             {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
                         </div>
                         <div>
-                            <p className="text-zinc-900 dark:text-zinc-200 text-sm font-medium">Dark Mode</p>
+                            <p className="text-zinc-900 dark:text-zinc-200 text-sm font-medium">
+                                {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+                            </p>
                             <p className="text-zinc-500 dark:text-zinc-500 text-xs">Manage theme preference</p>
                         </div>
                     </div>
                     {/* Dark Mode Toggle */}
                     <button
                         onClick={toggleDarkMode}
-                        className={`w-10 h-6 rounded-full relative cursor-pointer transition-all flex-shrink-0 ${isDarkMode ? 'bg-indigo-600' : 'bg-zinc-700'
+                        className={`w-10 h-6 rounded-full relative cursor-pointer transition-all flex-shrink-0 ${isDarkMode ? 'bg-zinc-200' : 'bg-zinc-700'
                             }`}
                     >
-                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${isDarkMode ? 'right-1' : 'left-1'
+                        <div className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${isDarkMode ? 'right-1 bg-zinc-900' : 'left-1 bg-white'
                             }`}></div>
                     </button>
                 </div>
@@ -61,8 +63,8 @@ export default function Settings() {
             <section className="space-y-4">
                 <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-wider">Data & Sync</h2>
 
-                <div className="p-4 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 space-y-4">
-                    <div className="flex items-center justify-between border-b border-gray-200 dark:border-zinc-800 pb-4">
+                <div className="p-4 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900/50 space-y-4">
+                    <div className="flex items-center justify-between border-b border-border-subtle dark:border-zinc-800 pb-4">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-amber-100 dark:bg-zinc-800 rounded-lg text-amber-600 dark:text-amber-500">
                                 <Database size={18} />
@@ -88,7 +90,7 @@ export default function Settings() {
                         onClick={handleExport}
                         className="flex w-full items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-zinc-800/50 rounded-lg transition-colors text-left group"
                     >
-                        <div className="p-2 bg-gray-100 dark:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200 group-hover:bg-gray-200 dark:group-hover:bg-zinc-700">
+                        <div className="p-2 bg-tag-bg dark:bg-zinc-800 rounded-lg text-text-secondary dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200 group-hover:bg-gray-200 dark:group-hover:bg-zinc-700">
                             <Download size={18} />
                         </div>
                         <div>

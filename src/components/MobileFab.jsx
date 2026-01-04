@@ -19,7 +19,7 @@ export default function MobileFab() {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="md:hidden fixed bottom-20 right-4 z-50 bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-full shadow-lg shadow-indigo-500/30 transition-transform active:scale-95"
+                    className="md:hidden fixed bottom-20 right-4 z-50 bg-action-primary hover:bg-action-primary text-white p-4 rounded-full shadow-lg shadow-button/30 transition-transform active:scale-95"
                     aria-label="Add New Log"
                 >
                     <Plus size={24} />

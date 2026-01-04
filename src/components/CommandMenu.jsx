@@ -31,7 +31,7 @@ export default function CommandMenu() {
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
             {/* Dialog */}
-            <Command className="relative w-full max-w-lg rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl overflow-hidden font-sans">
+            <Command className="relative w-full max-w-lg rounded-card border border-zinc-800 bg-zinc-950 shadow-2xl overflow-hidden font-sans">
                 <div className="flex items-center border-b border-zinc-800 px-3">
                     <Command.Input
                         placeholder="Type a command or search..."

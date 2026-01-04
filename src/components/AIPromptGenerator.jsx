@@ -39,9 +39,9 @@ ${logText}`;
         return (
             <div
                 onClick={() => setIsOpen(true)}
-                className={`p-1 rounded-xl border border-gray-300 dark:border-zinc-800 border-dashed flex flex-col items-center justify-center py-8 text-zinc-600 dark:text-zinc-500 bg-white dark:bg-zinc-900/50 hover:bg-gray-50 dark:hover:bg-zinc-900/80 transition-colors cursor-pointer group ${className}`}
+                className={`p-1 rounded-card border border-border-input dark:border-zinc-800 border-dashed flex flex-col items-center justify-center py-8 text-zinc-600 dark:text-zinc-500 bg-surface dark:bg-zinc-900/50 hover:bg-gray-50 dark:hover:bg-zinc-900/80 transition-colors cursor-pointer group ${className}`}
             >
-                <div className="p-3 bg-gray-100 dark:bg-zinc-800 rounded-full mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <div className="p-3 bg-tag-bg dark:bg-zinc-800 rounded-full mb-3 group-hover:bg-action-primary group-hover:text-white transition-colors">
                     <Sparkles size={20} />
                 </div>
                 <span className="text-sm font-medium">Generate AI Performance Summary</span>
@@ -51,23 +51,23 @@ ${logText}`;
     }
 
     return (
-        <div className={`p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm ${className}`}>
+        <div className={`p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900 shadow-sm ${className}`}>
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                    <Sparkles size={18} className="text-indigo-600 dark:text-indigo-400" /> AI Prompt Ready
+                <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 flex items-center gap-2">
+                    <Sparkles size={18} className="text-text-primary dark:text-text-secondary" /> AI Prompt Ready
                 </h3>
                 <button onClick={() => setIsOpen(false)} className="text-xs text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300">Close</button>
             </div>
 
             <textarea
-                className="w-full h-64 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-lg p-4 text-xs font-mono text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-indigo-500/50 resize-none mb-4"
+                className="w-full h-64 bg-gray-50 dark:bg-zinc-950 border border-border-subtle dark:border-zinc-800 rounded-lg p-4 text-xs font-mono text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-action-primary/50 resize-none mb-4"
                 readOnly
                 value={generatePrompt()}
             />
 
             <button
                 onClick={handleCopy}
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-2 bg-action-primary hover:bg-action-hover text-white rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
             >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
                 {copied ? "Copied to Clipboard!" : "Copy Prompt for ChatGPT/Claude"}

@@ -33,14 +33,14 @@ export default function Heatmap({ className }) {
 
     const getColor = (count) => {
         if (!count) return 'bg-gray-200 dark:bg-zinc-800/50';
-        if (count === 1) return 'bg-indigo-200 dark:bg-indigo-900/60';
-        if (count <= 3) return 'bg-indigo-400 dark:bg-indigo-700';
-        return 'bg-indigo-600 dark:bg-indigo-500'; // High activity
+        if (count === 1) return 'bg-blue-300 dark:bg-blue-900/60';      // More vibrant light blue
+        if (count <= 3) return 'bg-blue-500 dark:bg-blue-600';          // Vibrant medium blue
+        return 'bg-blue-700 dark:bg-blue-400';                          // Deep royal blue (vibrant) instead of slate-900
     };
 
     return (
-        <div className={cn("p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden", className)}>
-            <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 mb-4 flex items-center gap-2">
+        <div className={cn("p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900 overflow-hidden", className)}>
+            <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-4 flex items-center gap-2">
                 <Activity size={18} className="text-emerald-500 dark:text-emerald-400" /> Contribution Activity
             </h3>
 
@@ -71,9 +71,9 @@ export default function Heatmap({ className }) {
             <div className="flex justify-end items-center gap-2 mt-2 text-xs text-zinc-400 dark:text-zinc-500">
                 <span>Less</span>
                 <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-zinc-800/50"></div>
-                <div className="w-3 h-3 rounded-sm bg-indigo-200 dark:bg-indigo-900/60"></div>
-                <div className="w-3 h-3 rounded-sm bg-indigo-400 dark:bg-indigo-700"></div>
-                <div className="w-3 h-3 rounded-sm bg-indigo-600 dark:bg-indigo-500"></div>
+                <div className="w-3 h-3 rounded-sm bg-blue-300 dark:bg-blue-900/60"></div>
+                <div className="w-3 h-3 rounded-sm bg-blue-500 dark:bg-blue-600"></div>
+                <div className="w-3 h-3 rounded-sm bg-blue-700 dark:bg-blue-400"></div>
                 <span>More</span>
             </div>
         </div>

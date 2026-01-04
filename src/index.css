@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,6 +16,13 @@
     /* Dark mode colors */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
+  }
+
+  html,
+  body,
+  #root {
+    @apply h-full w-full overscroll-none;
+    overflow: hidden !important;
   }
 
   body {
@@ -57,5 +65,45 @@
 
   .placeholder-node p {
     @apply m-0 min-h-[1.5rem];
+  }
+
+  /* Notebook Grid Pattern */
+  .notebook-grid {
+    background-image: radial-gradient(circle, rgba(139, 92, 46, 0.12) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .dark .notebook-grid {
+    background-image: radial-gradient(circle, rgba(161, 161, 170, 0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Animated Gradient Background */
+  @keyframes gradient-shift {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .gradient-pastel-animated {
+    background: #efe8ef;
+  }
+
+  .dark .gradient-pastel-animated {
+    background: linear-gradient(135deg,
+        #2d1b2e 0%,
+        #1f1a2e 20%,
+        #2e1f1b 40%,
+        #2b1e2d 60%,
+        #1e1f2e 80%,
+        #2d1b2e 100%);
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
   }
 }

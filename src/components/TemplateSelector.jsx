@@ -29,7 +29,7 @@ export default function TemplateSelector({ onSelect, onCancel }) {
 
     return createPortal(
         <Command className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-lg overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[85vh] flex flex-col">
+            <div className="w-full max-w-lg overflow-hidden rounded-card border border-zinc-800 bg-zinc-950 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[85vh] flex flex-col">
                 <div className="flex items-center border-b border-zinc-800 px-3 shrink-0">
                     <Sparkles className="mr-2 h-4 w-4 text-amber-500" />
                     <Command.Input
@@ -55,7 +55,7 @@ export default function TemplateSelector({ onSelect, onCancel }) {
                                     className="relative flex cursor-default select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none data-[selected=true]:bg-zinc-800 data-[selected=true]:text-zinc-50 text-zinc-300 group transition-colors"
                                 >
                                     <div className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 mr-3">
-                                        <Icon className="h-4 w-4 text-zinc-400 group-data-[selected=true]:text-indigo-400" />
+                                        <Icon className="h-4 w-4 text-zinc-400 group-data-[selected=true]:text-text-secondary" />
                                     </div>
                                     <div className="flex flex-col gap-0.5">
                                         <span className="font-medium">{template.name}</span>

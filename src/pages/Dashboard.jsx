@@ -32,7 +32,7 @@ export default function Dashboard() {
                         Review & Growth
                         {isManagerMode && <span className="text-xs font-mono bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded border border-amber-500/50">MANAGER MODE</span>}
                     </h1>
-                    <p className="text-zinc-500 dark:text-zinc-400">Track your impact metrics and career progress.</p>
+                    <p className="text-text-secondary dark:text-zinc-400">Track your impact metrics and career progress.</p>
                 </div>
 
                 <button
@@ -41,7 +41,7 @@ export default function Dashboard() {
                         "flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300",
                         isManagerMode
                             ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20"
-                            : "bg-gray-100 dark:bg-zinc-900 border-gray-300 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                            : "bg-gray-100 dark:bg-zinc-900 border-border-input dark:border-zinc-800 text-text-secondary dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
                     )}
                 >
                     {isManagerMode ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -57,25 +57,25 @@ export default function Dashboard() {
                 </div>
 
                 {/* 1. Impact Distribution */}
-                <div className="md:col-span-2 p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                    <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 mb-1">Impact Distribution</h3>
+                <div className="md:col-span-2 p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
+                    <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-1">Impact Distribution</h3>
                     <p className="text-sm text-zinc-500 dark:text-zinc-500 mb-6">Visualizing your contribution intensity.</p>
 
                     <div className="space-y-6">
                         <div className="relative pt-2">
-                            <div className="flex mb-2 items-center justify-between text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
+                            <div className="flex mb-2 items-center justify-between text-xs uppercase tracking-wider font-semibold text-text-secondary dark:text-zinc-400">
                                 <span>Impact Breakdown</span>
-                                <span className="text-zinc-900 dark:text-zinc-50">{stats.total} Logs Total</span>
+                                <span className="text-text-primary dark:text-zinc-50">{stats.total} Logs Total</span>
                             </div>
                             <div className="h-4 flex rounded-full overflow-hidden bg-gray-200 dark:bg-zinc-800">
-                                <div style={{ width: `${stats.impact.high * 100}%` }} className="bg-amber-500 transition-all duration-1000" title="High Impact"></div>
-                                <div style={{ width: `${stats.impact.med * 100}%` }} className="bg-indigo-500 transition-all duration-1000" title="Medium Impact"></div>
-                                <div style={{ width: `${stats.impact.low * 100}%` }} className="bg-zinc-400 dark:bg-zinc-600 transition-all duration-1000" title="Low Impact"></div>
+                                <div style={{ width: `${stats.impact.high * 100}%` }} className="bg-violet-500 transition-all duration-1000" title="High Impact"></div>
+                                <div style={{ width: `${stats.impact.med * 100}%` }} className="bg-amber-500 transition-all duration-1000" title="Medium Impact"></div>
+                                <div style={{ width: `${stats.impact.low * 100}%` }} className="bg-blue-500 transition-all duration-1000" title="Low Impact"></div>
                             </div>
                             <div className="flex gap-4 mt-3 text-xs">
-                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> High</div>
-                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Medium</div>
-                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-600"></div> Low</div>
+                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-violet-500"></div> High</div>
+                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Medium</div>
+                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Low</div>
                             </div>
                         </div>
                     </div>
@@ -83,8 +83,8 @@ export default function Dashboard() {
 
                 {/* 2. Top Skills & Learned Bank */}
                 <div className="space-y-6">
-                    <div className="p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                        <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 mb-4">Top Skills</h3>
+                    <div className="p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
+                        <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-4">Top Skills</h3>
                         <div className="space-y-3">
                             {stats.topSkills.length > 0 ? stats.topSkills.map(([skill, count], i) => (
                                 <div key={skill} className="flex items-center justify-between group">
@@ -92,7 +92,7 @@ export default function Dashboard() {
                                         <span className="text-zinc-400 dark:text-zinc-600 font-mono text-xs">0{i + 1}</span>
                                         {skill}
                                     </span>
-                                    <span className="text-xs font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">{count}</span>
+                                    <span className="text-xs font-mono text-text-primary dark:text-text-secondary bg-action-primary/10 px-2 py-0.5 rounded-full">{count}</span>
                                 </div>
                             )) : (
                                 <div className="text-zinc-500 dark:text-zinc-500 text-sm italic">No skills tagged yet.</div>

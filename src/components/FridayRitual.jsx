@@ -50,8 +50,8 @@ export default function FridayRitual() {
                     onClick={() => setIsOpen(true)}
                     className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 animate-in fade-in slide-in-from-bottom-4 duration-1000 group"
                 >
-                    <div className="absolute inset-0 bg-indigo-500 rounded-full blur opacity-40 group-hover:opacity-60 transition-opacity animate-pulse"></div>
-                    <div className="relative bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-3 rounded-full shadow-xl flex items-center gap-3 font-semibold transition-all hover:scale-105 active:scale-95">
+                    <div className="absolute inset-0 bg-action-primary rounded-full blur opacity-40 group-hover:opacity-60 transition-opacity animate-pulse"></div>
+                    <div className="relative bg-action-primary hover:bg-action-primary text-white px-5 py-3 rounded-full shadow-xl flex items-center gap-3 font-semibold transition-all hover:scale-105 active:scale-95">
                         <PartyPopper size={20} />
                         <span>Wrap Up Week</span>
                     </div>
@@ -74,14 +74,14 @@ export default function FridayRitual() {
                         {step === 0 ? (
                             <div className="space-y-6">
                                 <div className="text-center space-y-2">
-                                    <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto text-indigo-400 mb-4">
+                                    <div className="w-16 h-16 bg-action-primary/10 rounded-full flex items-center justify-center mx-auto text-text-secondary mb-4">
                                         <PartyPopper size={32} />
                                     </div>
                                     <h2 className="text-2xl font-bold">The Friday Ritual</h2>
                                     <p className="text-zinc-400">You crushed it this week. Let's review your wins.</p>
                                 </div>
 
-                                <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800 overflow-y-auto max-h-[40vh] custom-scrollbar">
+                                <div className="bg-zinc-900/50 rounded-card p-6 border border-zinc-800 overflow-y-auto max-h-[40vh] custom-scrollbar">
                                     <h3 className="text-sm font-semibold text-zinc-500 mb-4">THIS WEEK'S HIGHLIGHTS ({currentWeekLogs.length})</h3>
 
                                     {currentWeekLogs.length === 0 ? (
@@ -92,7 +92,7 @@ export default function FridayRitual() {
                                         <div className="space-y-3">
                                             {currentWeekLogs.map(log => (
                                                 <div key={log.id} className="flex gap-3 items-start p-3 bg-zinc-900 rounded-lg border border-zinc-800/50">
-                                                    <div className="mt-1 w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
+                                                    <div className="mt-1 w-2 h-2 rounded-full bg-action-primary shrink-0" />
                                                     <div className="space-y-1">
                                                         <div className="text-sm text-zinc-300 line-clamp-2">
                                                             {log.content?.plainTextSnippet}
@@ -100,7 +100,7 @@ export default function FridayRitual() {
                                                         <div className="text-xs text-zinc-500 flex gap-2">
                                                             <span>{format(new Date(log.dateIso), 'EEE')}</span>
                                                             {log.tags?.map(tag => (
-                                                                <span key={tag} className="text-indigo-400/80">#{tag}</span>
+                                                                <span key={tag} className="text-text-secondary/80">#{tag}</span>
                                                             ))}
                                                         </div>
                                                     </div>
@@ -113,7 +113,7 @@ export default function FridayRitual() {
                                 <div className="flex justify-end pt-4">
                                     <button
                                         onClick={() => setStep(1)}
-                                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all"
+                                        className="bg-action-primary hover:bg-action-primary text-white px-6 py-3 rounded-card font-medium flex items-center gap-2 transition-all"
                                     >
                                         Complete Week <ArrowRight size={18} />
                                     </button>
@@ -138,7 +138,7 @@ export default function FridayRitual() {
                                         setIsOpen(false);
                                         setTimeout(() => setStep(0), 500);
                                     }}
-                                    className="bg-zinc-800 hover:bg-zinc-700 text-white px-8 py-3 rounded-xl font-medium transition-all"
+                                    className="bg-zinc-800 hover:bg-zinc-700 text-white px-8 py-3 rounded-card font-medium transition-all"
                                 >
                                     Close & Relax
                                 </button>
