@@ -35,10 +35,10 @@ export function useAddLog() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ json, text, impact = 'medium' }) => {
+        mutationFn: async ({ json, text, impact = 'medium', date }) => {
             const contentBody = json || {};
             let plainText = text || '';
-            let dateIso = new Date().toISOString();
+            let dateIso = date ? new Date(date).toISOString() : new Date().toISOString();
 
             // 3. Natural Language Date Parsing (FR-11)
             // Patterns: "Yesterday:", "Last Friday:", "2 days ago:"
@@ -182,6 +182,19 @@ export function useAddLog() {
                     });
                 }
             });
+        },
+    });
+}
+
+export function useDeleteLog() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id) => {
+            await db.logs.delete(id);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['logs']);
         },
     });
 }

@@ -1,13 +1,16 @@
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import { BubbleMenu } from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Mention from '@tiptap/extension-mention'
 import BubbleMenuExtension from '@tiptap/extension-bubble-menu'
 import React, { useState, useEffect, useRef } from 'react'
+import { DatePicker } from './ui/DatePicker'
 import { Select } from './ui/Select'
 import { Sparkles, LayoutTemplate } from 'lucide-react'
 import { cn } from '../lib/utils'
 import TemplateSelector from './TemplateSelector'
+import PlaceholderNode from '../lib/extensions/PlaceholderNode'
 import suggestion from '../lib/suggestion'
 import { db } from '../lib/db'
 import 'tippy.js/dist/tippy.css'
@@ -23,6 +26,7 @@ const PROMPTS = [
 
 export default function Composer({ onSave, className, initialContent }) {
     const [impact, setImpact] = useState('medium');
+    const [logDate, setLogDate] = useState(new Date().toISOString());
     const [prompt, setPrompt] = useState(null);
     const [showTemplateSelector, setShowTemplateSelector] = useState(false);
     const idleTimerRef = useRef(null);
@@ -30,6 +34,7 @@ export default function Composer({ onSave, className, initialContent }) {
     const editor = useEditor({
         extensions: [
             StarterKit,
+            PlaceholderNode,
             Placeholder.configure({
                 placeholder: "What did you work on today? (Type / for commands, # for tags)",
             }),
@@ -45,7 +50,7 @@ export default function Composer({ onSave, className, initialContent }) {
         content: initialContent || '',
         editorProps: {
             attributes: {
-                class: 'prose prose-sm prose-invert focus:outline-none max-w-none min-h-[100px]',
+                class: 'prose prose-sm prose-invert focus:outline-none max-w-none min-h-[60px]',
             },
             handleKeyDown: (view, event) => {
                 if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
@@ -55,7 +60,12 @@ export default function Composer({ onSave, className, initialContent }) {
                 return false;
             }
         },
+        onUpdate: ({ editor }) => {
+            setIsEmpty(editor.isEmpty);
+        }
     });
+
+    const [isEmpty, setIsEmpty] = useState(true);
 
     // Idle Detection for Micro-Prompts
     useEffect(() => {
@@ -94,9 +104,10 @@ export default function Composer({ onSave, className, initialContent }) {
         const json = editor.getJSON();
         const text = editor.getText();
 
-        onSave(json, text, impact);
+        onSave(json, text, impact, logDate);
         editor.commands.clearContent();
         setImpact('medium');
+        setLogDate(new Date().toISOString());
         setPrompt(null);
     };
 
@@ -126,17 +137,32 @@ export default function Composer({ onSave, className, initialContent }) {
         }
     };
 
-    const handleInsertTemplate = (htmlContent) => {
+    const handleInsertTemplate = (templateContent) => {
         if (editor) {
-            editor.commands.insertContent(htmlContent);
+            // If it's JSON content (new format), use setContent
+            if (typeof templateContent === 'object' && templateContent.type === 'doc') {
+                editor.commands.setContent(templateContent);
+            } else {
+                // Fallback for old HTML format (custom templates)
+                editor.commands.insertContent(templateContent);
+            }
             setShowTemplateSelector(false);
             editor.commands.focus();
+
+            // Focus on the first placeholder if it exists
+            setTimeout(() => {
+                const firstPlaceholder = editor.view.dom.querySelector('.placeholder-node');
+                if (firstPlaceholder) {
+                    const pos = editor.view.posAtDOM(firstPlaceholder, 0);
+                    editor.commands.setTextSelection(pos + 1);
+                }
+            }, 50);
         }
     };
 
     return (
-        <div className={cn("relative group rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50", className)}>
-            <div className="min-h-[120px] relative">
+        <div className={cn("relative group rounded-xl border border-zinc-800 bg-zinc-900 p-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50", className)}>
+            <div className="min-h-[60px] relative">
                 {editor && (
                     <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
                         <button
@@ -164,39 +190,40 @@ export default function Composer({ onSave, className, initialContent }) {
                 )}
             </div>
 
-            <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800">
-                <div className="flex items-center gap-4 text-xs font-mono">
-                    <div className="flex items-center gap-1 text-zinc-500">
-                        <span>CMD+ENTER to save</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 border-l border-zinc-800 pl-4">
-                        <span className="text-zinc-500">Impact:</span>
-                        <Select
-                            value={impact}
-                            onChange={setImpact}
-                            options={[
-                                { value: 'low', label: 'Low' },
-                                { value: 'medium', label: 'Medium' },
-                                { value: 'high', label: 'High' }
-                            ]}
-                        />
-                    </div>
+            <div className="flex flex-wrap items-center justify-between mt-3 pt-3 border-t border-zinc-800 gap-3">
+                <div className="flex items-center gap-2">
+                    <Select
+                        value={impact}
+                        onChange={setImpact}
+                        options={[
+                            { value: 'low', label: 'Low' },
+                            { value: 'medium', label: 'Medium' },
+                            { value: 'high', label: 'High' }
+                        ]}
+                    />
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <DatePicker
+                        date={logDate ? new Date(logDate) : undefined}
+                        onSelect={(d) => setLogDate(d?.toISOString())}
+                        placeholder="Today"
+                        className="w-auto"
+                        buttonClassName="w-auto border-0 bg-transparent text-zinc-400 hover:text-zinc-200 pl-0"
+                        direction="top"
+                    />
                     <button
                         onClick={() => setShowTemplateSelector(true)}
-                        className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-md text-xs font-medium transition-colors border border-zinc-700 hover:border-zinc-600"
+                        className="flex items-center gap-1.5 bg-zinc-800/50 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md text-xs font-medium transition-colors h-8"
                         title="Insert Template"
                     >
                         <LayoutTemplate size={14} />
-                        <span>Template</span>
+                        <span className="hidden sm:inline">Template</span>
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={!editor || editor.isEmpty}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!editor || isEmpty}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-8 shadow-sm shadow-indigo-500/20"
                     >
                         Log Work
                     </button>

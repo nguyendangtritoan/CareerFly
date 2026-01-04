@@ -35,7 +35,7 @@ export default function LogEntry({ log, onDelete }) {
     }, [content, editor]);
 
     return (
-        <div className="group relative pl-8 pb-8 border-l border-zinc-800 last:border-0 hover:border-zinc-700 transition-colors">
+        <div className="group relative pl-8 pb-8 transition-colors">
             <div className="absolute -left-[4.5px] top-[5px] h-2 w-2 rounded-full border border-zinc-950 bg-zinc-600 group-hover:bg-indigo-500 group-hover:scale-125 transition-all duration-300"></div>
 
             <div className="text-[10px] font-mono text-zinc-500 mb-2 flex items-center justify-between h-4">

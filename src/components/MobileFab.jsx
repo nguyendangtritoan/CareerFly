@@ -8,8 +8,8 @@ export default function MobileFab() {
     const [isOpen, setIsOpen] = useState(false);
     const addLog = useAddLog();
 
-    const handleSave = (json, text, impact) => {
-        addLog.mutate({ json, text, impact });
+    const handleSave = (json, text, impact, date) => {
+        addLog.mutate({ json, text, impact, date });
         setIsOpen(false);
     };
 

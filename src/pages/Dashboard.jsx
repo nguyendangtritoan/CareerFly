@@ -12,13 +12,17 @@ import { useStats } from '../hooks/useStats';
 
 export default function Dashboard() {
     const { stats, isLoading } = useStats();
+    console.log('[Dashboard] Render. isLoading:', isLoading, 'Stats:', stats);
     const { isManagerMode, toggleManagerMode } = useStore();
 
     // Use stats.total instead of filtering manually again just for count if needed, 
     // but filteredLogs is internal to the hook now unless we expose it.
     // The UI uses 'stats' object directly.
 
-    if (isLoading) return <div className="p-8">Loading stats...</div>;
+    if (isLoading) {
+        console.log('[Dashboard] Still loading...');
+        return <div className="p-8">Loading stats...</div>;
+    }
 
     return (
         <div className={cn("p-4 md:p-8 max-w-5xl mx-auto w-full pb-32 transition-colors duration-500", isManagerMode ? "bg-zinc-950" : "")}>

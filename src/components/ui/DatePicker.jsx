@@ -13,7 +13,7 @@ const css = `
   .rdp-day_today { color: #818cf8; font-weight: bold; }
 `;
 
-export function DatePicker({ date, onSelect, className, placeholder = "Pick a date" }) {
+export function DatePicker({ date, onSelect, className, buttonClassName, placeholder = "Pick a date", direction = "bottom" }) {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef(null);
 
@@ -39,7 +39,8 @@ export function DatePicker({ date, onSelect, className, placeholder = "Pick a da
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
                     "flex items-center gap-2 bg-zinc-950 border border-zinc-700 rounded-md px-3 py-1.5 text-xs hover:border-zinc-600 focus:outline-none focus:border-indigo-500 transition-colors text-zinc-300 w-full justify-start",
-                    !date && "text-zinc-500"
+                    !date && "text-zinc-500",
+                    buttonClassName
                 )}
             >
                 <CalendarIcon size={14} />
@@ -47,7 +48,10 @@ export function DatePicker({ date, onSelect, className, placeholder = "Pick a da
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-1 p-2 rounded-lg border border-zinc-800 bg-zinc-950 shadow-xl animate-in fade-in zoom-in-95 left-0">
+                <div className={cn(
+                    "absolute z-50 p-2 rounded-lg border border-zinc-800 bg-zinc-950 shadow-xl animate-in fade-in zoom-in-95 left-0",
+                    direction === 'top' ? "bottom-full mb-2" : "mt-1"
+                )}>
                     <DayPicker
                         mode="single"
                         selected={date}

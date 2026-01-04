@@ -21,12 +21,12 @@ export default function Layout() {
     ];
 
     return (
-        <div className="flex h-screen bg-zinc-950 text-zinc-50 overflow-hidden">
+        <div className="flex min-h-screen bg-zinc-950 text-zinc-50">
             <CommandMenu />
             <MobileFab />
             {/* Sidebar (Desktop) */}
             <aside className={cn(
-                "hidden md:flex flex-col border-r border-zinc-900 bg-zinc-950/50 backdrop-blur-xl transition-all duration-300",
+                "hidden md:flex flex-col border-r border-zinc-900 bg-zinc-950/50 backdrop-blur-xl transition-all duration-300 z-50 sticky top-0 h-screen",
                 isSidebarOpen ? "w-64" : "w-16 items-center"
             )}>
                 <div className="p-4 flex items-center gap-2 border-b border-zinc-900 h-16">
@@ -55,18 +55,7 @@ export default function Layout() {
                             </Link>
                         )
                     })}
-                    <Link
-                        to="/knowledge"
-                        className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
-                            location.pathname === '/knowledge'
-                                ? "bg-zinc-900 text-indigo-400 shadow-sm ring-1 ring-zinc-800"
-                                : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
-                        )}
-                    >
-                        <BookOpen size={20} className={cn("transition-colors", location.pathname === '/knowledge' ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400")} />
-                        {isSidebarOpen && <span>Knowledge Bank</span>}
-                    </Link>
+
 
                     <Link
                         to="/settings"
@@ -77,16 +66,13 @@ export default function Layout() {
                                 : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
                         )}
                     >
-                        <SettingsIcon size={20} className={cn("transition-colors", location.pathname === '/settings' ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400")} />
+                        <Settings size={20} className={cn("transition-colors", location.pathname === '/settings' ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400")} />
                         {isSidebarOpen && <span>Settings</span>}
                     </Link>
                 </nav>
 
                 <div className="p-4 border-t border-zinc-900 space-y-2">
-                    <button className="flex items-center gap-3 px-3 py-2 w-full text-zinc-500 hover:text-zinc-300 transition-colors">
-                        <Settings size={20} />
-                        {isSidebarOpen && <span>Settings</span>}
-                    </button>
+
 
                     <button
                         onClick={() => user ? signOut() : signInWithGoogle()}
@@ -113,7 +99,7 @@ export default function Layout() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto relative flex flex-col bg-zinc-950">
+            <main className="flex-1 relative flex flex-col bg-zinc-950 min-w-0">
                 <Outlet />
             </main>
 

@@ -20,4 +20,44 @@
     opacity: 0.6;
     transition: all 0.3s ease-in-out;
   }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #27272a;
+    /* zinc-800 */
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3f3f46;
+    /* zinc-700 */
+  }
+
+  /* Placeholder Node Styles */
+  .placeholder-node {
+    @apply rounded px-2 py-1 my-1 border border-zinc-800 bg-zinc-900/50 transition-all;
+  }
+
+  .placeholder-node-empty::before {
+    content: attr(data-placeholder-label);
+    @apply text-zinc-500 italic text-sm;
+    pointer-events: none;
+  }
+
+  .placeholder-node:focus-within {
+    @apply border-indigo-500/50 bg-indigo-950/20 ring-2 ring-indigo-500/20;
+  }
+
+  .placeholder-node p {
+    @apply m-0;
+  }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Command } from 'cmdk';
 import { Sparkles, Hammer, Bug, Brain, Plus, Trash2 } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -8,6 +9,12 @@ import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function TemplateSelector({ onSelect, onCancel }) {
     const [search, setSearch] = useState('');
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
 
     // Fetch custom templates
     const customTemplates = useLiveQuery(() => db.templates.toArray()) || [];
@@ -18,10 +25,12 @@ export default function TemplateSelector({ onSelect, onCancel }) {
         'Brain': Brain
     };
 
-    return (
-        <Command className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-lg overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl animate-in zoom-in-95 duration-200">
-                <div className="flex items-center border-b border-zinc-800 px-3">
+    if (!mounted) return null;
+
+    return createPortal(
+        <Command className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-lg overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[85vh] flex flex-col">
+                <div className="flex items-center border-b border-zinc-800 px-3 shrink-0">
                     <Sparkles className="mr-2 h-4 w-4 text-amber-500" />
                     <Command.Input
                         value={search}
@@ -31,7 +40,7 @@ export default function TemplateSelector({ onSelect, onCancel }) {
                     />
                 </div>
 
-                <Command.List className="max-h-[300px] overflow-y-auto p-2 scrollbar-hide">
+                <Command.List className="overflow-y-auto p-2 scrollbar-hide flex-1">
                     <Command.Empty className="py-6 text-center text-sm text-zinc-500">
                         No templates found.
                     </Command.Empty>
@@ -97,6 +106,7 @@ export default function TemplateSelector({ onSelect, onCancel }) {
             </div>
             {/* Overlay click to close */}
             <div className="fixed inset-0 -z-10" onClick={onCancel}></div>
-        </Command>
+        </Command>,
+        document.body
     );
 }
