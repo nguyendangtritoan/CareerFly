@@ -64,6 +64,13 @@ export class SyncEngine {
             await localDb.logs.put({ ...remoteLog, syncState: { isSynced: true } });
         }
     }
+
+    retrySync() {
+        // Retry syncing by restarting the sync process
+        this.stop();
+        this.start();
+    }
+
 }
 
 export const syncEngine = new SyncEngine(); // Singleton instance (ID will be set on login)

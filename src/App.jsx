@@ -1,35 +1,32 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useStore } from './lib/store';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Timeline from './pages/Timeline';
 import Goals from './pages/Goals';
 import Knowledge from './pages/Knowledge';
-import Settings from './pages/Settings'; // Added Settings import
-import { useEffect } from 'react';
-import { useStore } from './lib/store'; // Corrected path
+import Settings from './pages/Settings';
 
 const queryClient = new QueryClient();
 
 function App() {
-  const { isPrivacyBlurred, setPrivacyBlurred } = useStore();
+  const { isDarkMode } = useStore();
 
+  // Apply dark mode class to document - this runs globally
   useEffect(() => {
-    const handleBlur = () => setPrivacyBlurred(true);
-    const handleFocus = () => setPrivacyBlurred(false);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('focus', handleFocus);
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, [setPrivacyBlurred]);
+  }, [isDarkMode]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen w-full bg-zinc-950 text-zinc-50 font-sans selection:bg-indigo-500/30 relative">
-          {isPrivacyBlurred && <div className="fixed inset-0 z-[100] backdrop-blur-xl bg-black/50 flex items-center justify-center pointer-events-none transition-all duration-700"><div className="text-zinc-500 font-mono text-sm animate-pulse flex items-center gap-2"><span>🔒</span> Content Hidden</div></div>}
+        <div className="min-h-screen w-full bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans selection:bg-indigo-500/30 relative">
 
           <Routes>
             <Route element={<Layout />}>

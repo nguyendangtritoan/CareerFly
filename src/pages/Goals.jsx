@@ -23,7 +23,7 @@ export default function Goals() {
             <div className="mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-bold mb-2">Career Goals</h1>
-                    <p className="text-zinc-400">Set targets and track your growth journey.</p>
+                    <p className="text-zinc-500 dark:text-zinc-400">Set targets and track your growth journey.</p>
                 </div>
                 <button
                     onClick={() => setIsAdding(!isAdding)}
@@ -34,37 +34,37 @@ export default function Goals() {
             </div>
 
             {isAdding && (
-                <div className="mb-8 p-6 rounded-xl border border-zinc-800 bg-zinc-900 animate-in fade-in slide-in-from-top-4">
+                <div className="mb-8 p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 animate-in fade-in slide-in-from-top-4">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-medium text-zinc-500 mb-1">Goal Title</label>
+                            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-500 mb-1">Goal Title</label>
                             <input
                                 type="text"
                                 value={newGoal.title}
                                 onChange={e => setNewGoal({ ...newGoal, title: e.target.value })}
                                 placeholder="e.g. Become a Senior Engineer"
-                                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm text-zinc-50 focus:outline-none focus:border-indigo-500"
+                                className="w-full bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-lg p-2 text-sm text-zinc-900 dark:text-zinc-50 focus:outline-none focus:border-indigo-500"
                                 autoFocus
                             />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-medium text-zinc-500 mb-1">Description (Optional)</label>
+                                <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-500 mb-1">Description (Optional)</label>
                                 <input
                                     type="text"
                                     value={newGoal.description}
                                     onChange={e => setNewGoal({ ...newGoal, description: e.target.value })}
                                     placeholder="Success criteria..."
-                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm text-zinc-50 focus:outline-none focus:border-indigo-500"
+                                    className="w-full bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-lg p-2 text-sm text-zinc-900 dark:text-zinc-50 focus:outline-none focus:border-indigo-500"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-zinc-500 mb-1">Target Date (Optional)</label>
+                                <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-500 mb-1">Target Date (Optional)</label>
                                 <input
                                     type="date"
                                     value={newGoal.targetDate}
                                     onChange={e => setNewGoal({ ...newGoal, targetDate: e.target.value })}
-                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm text-zinc-50 focus:outline-none focus:border-indigo-500"
+                                    className="w-full bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-lg p-2 text-sm text-zinc-900 dark:text-zinc-50 focus:outline-none focus:border-indigo-500"
                                 />
                             </div>
                         </div>
@@ -72,7 +72,7 @@ export default function Goals() {
                             <button
                                 type="button"
                                 onClick={() => setIsAdding(false)}
-                                className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                                className="px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                             >
                                 Cancel
                             </button>
@@ -99,7 +99,7 @@ export default function Goals() {
                 ) : (
                     goals.map(goal => (
                         <div key={goal.id} className={cn("group flex items-start gap-4 p-5 rounded-xl border transition-all",
-                            goal.status === 'completed' ? "bg-zinc-900/50 border-zinc-800/50 opacity-60" : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
+                            goal.status === 'completed' ? "bg-gray-50 dark:bg-zinc-900/50 border-gray-200 dark:border-zinc-800/50 opacity-60" : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
                         )}>
                             <button
                                 onClick={() => toggleGoalStatus.mutate({

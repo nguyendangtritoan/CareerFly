@@ -21,15 +21,15 @@ export default function Layout() {
     ];
 
     return (
-        <div className="flex min-h-screen bg-zinc-950 text-zinc-50">
+        <div className="flex min-h-screen bg-gray-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
             <CommandMenu />
             <MobileFab />
             {/* Sidebar (Desktop) */}
             <aside className={cn(
-                "hidden md:flex flex-col border-r border-zinc-900 bg-zinc-950/50 backdrop-blur-xl transition-all duration-300 z-50 sticky top-0 h-screen",
+                "hidden md:flex flex-col border-r border-gray-200 dark:border-zinc-900 bg-white dark:bg-zinc-950/50 backdrop-blur-xl transition-all duration-300 z-50 sticky top-0 h-screen",
                 isSidebarOpen ? "w-64" : "w-16 items-center"
             )}>
-                <div className="p-4 flex items-center gap-2 border-b border-zinc-900 h-16">
+                <div className="p-4 flex items-center gap-2 border-b border-gray-200 dark:border-zinc-900 h-16">
                     <div className="h-8 w-8 rounded-lg bg-indigo-600 shadow-lg shadow-indigo-500/20 flex items-center justify-center font-bold text-white">
                         CF
                     </div>
@@ -46,11 +46,11 @@ export default function Layout() {
                                 className={cn(
                                     "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
                                     isActive
-                                        ? "bg-zinc-900 text-indigo-400 shadow-sm ring-1 ring-zinc-800"
-                                        : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
+                                        ? "bg-gray-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800"
+                                        : "text-zinc-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-300"
                                 )}
                             >
-                                <item.icon size={20} className={cn("transition-colors", isActive ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400")} />
+                                <item.icon size={20} className={cn("transition-colors", isActive ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400")} />
                                 {isSidebarOpen && <span>{item.label}</span>}
                             </Link>
                         )
@@ -62,16 +62,16 @@ export default function Layout() {
                         className={cn(
                             "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
                             location.pathname === '/settings'
-                                ? "bg-zinc-900 text-indigo-400 shadow-sm ring-1 ring-zinc-800"
-                                : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
+                                ? "bg-gray-100 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800"
+                                : "text-zinc-500 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-300"
                         )}
                     >
-                        <Settings size={20} className={cn("transition-colors", location.pathname === '/settings' ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400")} />
+                        <Settings size={20} className={cn("transition-colors", location.pathname === '/settings' ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400")} />
                         {isSidebarOpen && <span>Settings</span>}
                     </Link>
                 </nav>
 
-                <div className="p-4 border-t border-zinc-900 space-y-2">
+                <div className="p-4 border-t border-gray-200 dark:border-zinc-900 space-y-2">
 
 
                     <button
@@ -99,12 +99,12 @@ export default function Layout() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 relative flex flex-col bg-zinc-950 min-w-0">
+            <main className="flex-1 relative flex flex-col bg-gray-50 dark:bg-zinc-950 min-w-0">
                 <Outlet />
             </main>
 
             {/* Mobile Nav (Bottom) */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-zinc-950/80 backdrop-blur-xl border-t border-zinc-800/50 z-50 flex justify-around items-center px-4">
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800/50 z-50 flex justify-around items-center px-4">
                 {navItems.map((item) => {
                     const isActive = location.pathname === item.href;
                     return (

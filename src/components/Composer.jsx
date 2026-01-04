@@ -61,7 +61,14 @@ export default function Composer({ onSave, className, initialContent }) {
             }
         },
         onUpdate: ({ editor }) => {
-            setIsEmpty(editor.isEmpty);
+            // Check if editor has any real content (text or filled placeholders)
+            const hasText = editor.getText().trim().length > 0;
+            // Check if there are placeholder nodes (templates have structure)
+            const hasPlaceholders = editor.getJSON().content?.some(node =>
+                node.type === 'placeholderNode' ||
+                (node.content && node.content.some(n => n.type === 'placeholderNode'))
+            );
+            setIsEmpty(!hasText && !hasPlaceholders);
         }
     });
 
@@ -161,13 +168,13 @@ export default function Composer({ onSave, className, initialContent }) {
     };
 
     return (
-        <div className={cn("relative group rounded-xl border border-zinc-800 bg-zinc-900 p-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50", className)}>
+        <div className={cn("relative group rounded-xl border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 shadow-sm", className)}>
             <div className="min-h-[60px] relative">
                 {editor && (
                     <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
                         <button
                             onClick={handleSaveTemplate}
-                            className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg shadow-xl hover:bg-zinc-800 transition-colors text-xs font-medium"
+                            className="flex items-center gap-1.5 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-3 py-1.5 rounded-lg shadow-xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-xs font-medium"
                         >
                             <Sparkles size={12} className="text-amber-500" />
                             Save as Template
@@ -190,7 +197,7 @@ export default function Composer({ onSave, className, initialContent }) {
                 )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between mt-3 pt-3 border-t border-zinc-800 gap-3">
+            <div className="flex flex-wrap items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-zinc-800 gap-3">
                 <div className="flex items-center gap-2">
                     <Select
                         value={impact}
@@ -214,7 +221,7 @@ export default function Composer({ onSave, className, initialContent }) {
                     />
                     <button
                         onClick={() => setShowTemplateSelector(true)}
-                        className="flex items-center gap-1.5 bg-zinc-800/50 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md text-xs font-medium transition-colors h-8"
+                        className="flex items-center gap-1.5 bg-gray-100 dark:bg-zinc-800/50 hover:bg-gray-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 px-3 py-1.5 rounded-md text-xs font-medium transition-colors h-8"
                         title="Insert Template"
                     >
                         <LayoutTemplate size={14} />

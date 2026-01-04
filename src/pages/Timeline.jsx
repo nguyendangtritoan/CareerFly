@@ -58,8 +58,7 @@ export default function Timeline() {
     const groupedLogs = useMemo(() => {
         if (!sortedLogs.length) return {};
         const groups = {};
-        logs.forEach(log => { // Note: using 'logs' here in original code might be bug if sortedLogs not used, but original code used logs.forEach in groupLogs logic in Step 646. Wait, step 646 has `sortedLogs.forEach`. I will fix this if needed, let's look at Step 646.
-            // In Step 646, it says `sortedLogs.forEach`. I'll match that.
+        sortedLogs.forEach(log => {
             if (!log.dateIso) return;
             const d = new Date(log.dateIso);
             if (isNaN(d.getTime())) return;
@@ -85,14 +84,14 @@ export default function Timeline() {
     }, [logs, isLoading]);
 
     return (
-        <div className="relative h-[calc(100vh-theme(spacing.16))] md:h-screen w-full bg-zinc-950 overflow-hidden">
+        <div className="relative h-[calc(100vh-theme(spacing.16))] md:h-screen w-full bg-gray-50 dark:bg-zinc-950 overflow-hidden">
 
             {/* Filter Toggle */}
             <button
                 onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
                 className={cn(
-                    "absolute top-6 right-6 z-40 p-2 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full text-zinc-400 hover:text-zinc-200 transition-colors shadow-lg",
-                    isMobileFiltersOpen && "bg-zinc-800 text-zinc-200"
+                    "absolute top-6 right-6 z-40 p-2 bg-white dark:bg-zinc-900/80 backdrop-blur-md border border-gray-300 dark:border-zinc-800 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors shadow-lg",
+                    isMobileFiltersOpen && "bg-gray-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200"
                 )}
             >
                 {isMobileFiltersOpen ? <X size={16} /> : <Filter size={16} />}
@@ -100,7 +99,7 @@ export default function Timeline() {
 
             {/* Floating Filters (Compact) */}
             <div className={cn(
-                "absolute top-16 right-4 md:top-4 md:right-16 z-30 flex-col gap-2 p-3 bg-zinc-900/90 backdrop-blur-md rounded-xl border border-zinc-800/50 shadow-2xl w-64 transition-all hover:bg-zinc-900/60 group animate-in fade-in slide-in-from-top-2",
+                "absolute top-16 right-4 md:top-4 md:right-16 z-30 flex-col gap-2 p-3 bg-white dark:bg-zinc-900/90 backdrop-blur-md rounded-xl border border-gray-200 dark:border-zinc-800/50 shadow-2xl w-64 transition-all hover:bg-gray-50 dark:hover:bg-zinc-900/60 group animate-in fade-in slide-in-from-top-2",
                 isMobileFiltersOpen ? "flex" : "hidden"
             )}>
                 <div className="flex items-center justify-between mb-1">
@@ -159,7 +158,7 @@ export default function Timeline() {
             </div>
 
             {/* Main Content Area */}
-            <main className="h-full flex flex-col min-w-0 bg-zinc-950 relative">
+            <main className="h-full flex flex-col min-w-0 bg-gray-50 dark:bg-zinc-950 relative">
 
                 {/* Log List (Chat Style) */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-8 md:px-8 space-y-8 flex flex-col scroll-smooth">
@@ -204,7 +203,7 @@ export default function Timeline() {
                 </div>
 
                 {/* Composer (Bottom Fixed) */}
-                <div className="hidden md:block p-4 md:p-6 border-t border-zinc-900 bg-zinc-950/80 backdrop-blur-md z-20">
+                <div className="hidden md:block p-4 md:p-6 border-t border-gray-200 dark:border-zinc-900 bg-white dark:bg-zinc-950/80 backdrop-blur-md z-20">
                     <div className="max-w-2xl mx-auto">
                         <Composer onSave={handleSave} />
                     </div>

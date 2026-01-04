@@ -16,9 +16,11 @@ export const PlaceholderNode = Node.create({
             label: {
                 default: 'Fill in...',
                 parseHTML: element => element.getAttribute('data-placeholder-label'),
-                renderHTML: attributes => ({
-                    'data-placeholder-label': attributes.label,
-                }),
+                renderHTML: attributes => {
+                    return {
+                        'data-placeholder-label': attributes.label,
+                    };
+                },
             },
         };
     },
@@ -36,6 +38,7 @@ export const PlaceholderNode = Node.create({
             'div',
             mergeAttributes(HTMLAttributes, {
                 'data-placeholder-node': '',
+                'data-placeholder-label': node.attrs.label,
                 'class': 'placeholder-node',
             }),
             0,
@@ -53,7 +56,7 @@ export const PlaceholderNode = Node.create({
 
                         doc.descendants((node, pos) => {
                             if (node.type.name === 'placeholderNode') {
-                                // Only show placeholder if the node is empty
+                                // Only add decoration if the node is empty
                                 if (node.textContent.length === 0) {
                                     decorations.push(
                                         Decoration.node(pos, pos + node.nodeSize, {
@@ -73,27 +76,47 @@ export const PlaceholderNode = Node.create({
                             const { selection } = state;
                             const { $from } = selection;
 
-                            // Find the next placeholder node
-                            let nextPlaceholderPos = null;
-                            let found = false;
+                            if (event.shiftKey) {
+                                // Shift+Tab: go to previous placeholder
+                                let prevPlaceholderPos = null;
 
-                            state.doc.descendants((node, pos) => {
-                                if (found) return false;
+                                state.doc.descendants((node, pos) => {
+                                    if (node.type.name === 'placeholderNode' && pos < $from.pos) {
+                                        prevPlaceholderPos = pos;
+                                    }
+                                });
 
-                                if (node.type.name === 'placeholderNode' && pos > $from.pos) {
-                                    nextPlaceholderPos = pos;
-                                    found = true;
-                                    return false;
+                                if (prevPlaceholderPos !== null) {
+                                    event.preventDefault();
+                                    const tr = state.tr.setSelection(
+                                        state.selection.constructor.near(state.doc.resolve(prevPlaceholderPos + 1))
+                                    );
+                                    dispatch(tr);
+                                    return true;
                                 }
-                            });
+                            } else {
+                                // Tab: go to next placeholder
+                                let nextPlaceholderPos = null;
+                                let found = false;
 
-                            if (nextPlaceholderPos !== null) {
-                                event.preventDefault();
-                                const tr = state.tr.setSelection(
-                                    state.selection.constructor.near(state.doc.resolve(nextPlaceholderPos + 1))
-                                );
-                                dispatch(tr);
-                                return true;
+                                state.doc.descendants((node, pos) => {
+                                    if (found) return false;
+
+                                    if (node.type.name === 'placeholderNode' && pos > $from.pos) {
+                                        nextPlaceholderPos = pos;
+                                        found = true;
+                                        return false;
+                                    }
+                                });
+
+                                if (nextPlaceholderPos !== null) {
+                                    event.preventDefault();
+                                    const tr = state.tr.setSelection(
+                                        state.selection.constructor.near(state.doc.resolve(nextPlaceholderPos + 1))
+                                    );
+                                    dispatch(tr);
+                                    return true;
+                                }
                             }
                         }
                         return false;

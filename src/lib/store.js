@@ -5,9 +5,9 @@ export const useStore = create((set) => ({
     isSidebarOpen: true,
     toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
-    // Privacy Blur
-    isPrivacyBlurred: false,
-    setPrivacyBlur: (blurred) => set({ isPrivacyBlurred: blurred }),
+    // Dark Mode
+    isDarkMode: true, // Default to dark mode
+    toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
 
     // Sync State (Optimistic)
     syncStatus: 'idle', // 'idle' | 'syncing' | 'error' | 'offline'

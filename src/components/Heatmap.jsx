@@ -32,16 +32,16 @@ export default function Heatmap({ className }) {
     });
 
     const getColor = (count) => {
-        if (!count) return 'bg-zinc-800/50';
-        if (count === 1) return 'bg-indigo-900/60';
-        if (count <= 3) return 'bg-indigo-700';
-        return 'bg-indigo-500'; // High activity
+        if (!count) return 'bg-gray-200 dark:bg-zinc-800/50';
+        if (count === 1) return 'bg-indigo-200 dark:bg-indigo-900/60';
+        if (count <= 3) return 'bg-indigo-400 dark:bg-indigo-700';
+        return 'bg-indigo-600 dark:bg-indigo-500'; // High activity
     };
 
     return (
-        <div className={cn("p-6 rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden", className)}>
-            <h3 className="text-lg font-medium text-zinc-50 mb-4 flex items-center gap-2">
-                <Activity size={18} className="text-emerald-400" /> Contribution Activity
+        <div className={cn("p-6 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden", className)}>
+            <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50 mb-4 flex items-center gap-2">
+                <Activity size={18} className="text-emerald-500 dark:text-emerald-400" /> Contribution Activity
             </h3>
 
             <div className="flex gap-1 overflow-x-auto pb-2 custom-scrollbar">
@@ -59,7 +59,7 @@ export default function Heatmap({ className }) {
                                     key={dateKey}
                                     title={`${dateKey}: ${count} logs`}
                                     className={cn(
-                                        "w-3 h-3 rounded-sm transition-colors hover:ring-1 hover:ring-white/50",
+                                        "w-3 h-3 rounded-sm transition-colors hover:ring-1 hover:ring-zinc-400 dark:hover:ring-white/50",
                                         getColor(count)
                                     )}
                                 />
@@ -68,12 +68,12 @@ export default function Heatmap({ className }) {
                     </div>
                 ))}
             </div>
-            <div className="flex justify-end items-center gap-2 mt-2 text-xs text-zinc-500">
+            <div className="flex justify-end items-center gap-2 mt-2 text-xs text-zinc-400 dark:text-zinc-500">
                 <span>Less</span>
-                <div className="w-3 h-3 rounded-sm bg-zinc-800/50"></div>
-                <div className="w-3 h-3 rounded-sm bg-indigo-900/60"></div>
-                <div className="w-3 h-3 rounded-sm bg-indigo-700"></div>
-                <div className="w-3 h-3 rounded-sm bg-indigo-500"></div>
+                <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-zinc-800/50"></div>
+                <div className="w-3 h-3 rounded-sm bg-indigo-200 dark:bg-indigo-900/60"></div>
+                <div className="w-3 h-3 rounded-sm bg-indigo-400 dark:bg-indigo-700"></div>
+                <div className="w-3 h-3 rounded-sm bg-indigo-600 dark:bg-indigo-500"></div>
                 <span>More</span>
             </div>
         </div>
