@@ -1,10 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Optional: Reset base styles */
-body {
-  background-color: #09090b;
-  /* matches zinc-950 */
-  color: #fafafa;
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+  }
+
+  body {
+    @apply bg-zinc-950 text-zinc-50 font-sans antialiased;
+  }
+
+  /* Privacy Blur */
+  body.privacy-blur main {
+    filter: blur(8px);
+    opacity: 0.6;
+    transition: all 0.3s ease-in-out;
+  }
 }
