@@ -3,13 +3,14 @@ import { useLogs, useAddLog, useDeleteLog } from '../hooks/useLogs';
 import Composer from '../components/Composer';
 import LogEntry from '../components/LogEntry';
 import { db } from '../lib/db';
-import { CloudOff, Filter, X } from 'lucide-react';
+import { CloudOff, Filter, X, Star } from 'lucide-react';
 import { DatePicker } from '../components/ui/DatePicker'
 import { ConfirmDialog } from '../components/ui/Dialog'
 import { getWeekNumber, cn } from '../lib/utils';
 
 export default function Timeline() {
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState(false);
+    const [filterStarred, setFilterStarred] = React.useState(false);
     const [dateRange, setDateRange] = React.useState(() => {
         const now = new Date();
         now.setHours(0, 0, 0, 0);
@@ -48,11 +49,23 @@ export default function Timeline() {
         }
     }
 
+    // Filter logs logic
+    const filteredLogs = useMemo(() => {
+        if (!logs) return [];
+        let result = logs;
+
+        if (filterStarred) {
+            result = result.filter(log => log.metadata?.isStarred);
+        }
+
+        return result;
+    }, [logs, filterStarred]);
+
     // Invert logs for Chat-style (Oldest -> Newest)
     const sortedLogs = useMemo(() => {
-        if (!logs) return [];
-        return [...logs].reverse(); // logs are Descending from DB, so reverse makes them Ascending
-    }, [logs]);
+        if (!filteredLogs) return [];
+        return [...filteredLogs].reverse(); // logs are Descending from DB, so reverse makes them Ascending
+    }, [filteredLogs]);
 
     // Group logs
     const groupedLogs = useMemo(() => {
@@ -73,15 +86,13 @@ export default function Timeline() {
         return groups;
     }, [sortedLogs]);
 
-    // Correction: The `groupedLogs` in Step 646 uses `sortedLogs.forEach`. The replacement below must ensure that.
-
     // Auto-scroll to bottom
     const bottomRef = React.useRef(null);
     React.useEffect(() => {
         if (bottomRef.current && !isLoading) {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [logs, isLoading]);
+    }, [filteredLogs, isLoading]);
 
     return (
         <div className="relative h-full w-full bg-[#efefe8] dark:bg-zinc-950 overflow-hidden notebook-grid">
@@ -104,6 +115,20 @@ export default function Timeline() {
             )}>
                 <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-400 transition-colors">Filters</span>
+
+                    {/* Star Filter Toggle */}
+                    <button
+                        onClick={() => setFilterStarred(!filterStarred)}
+                        className={cn(
+                            "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium transition-all border",
+                            filterStarred
+                                ? "bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-500/20 dark:border-amber-500/30 dark:text-amber-400"
+                                : "bg-white border-zinc-200 text-zinc-500 hover:text-amber-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400"
+                        )}
+                    >
+                        <Star size={10} fill={filterStarred ? "currentColor" : "none"} />
+                        <span>Starred Only</span>
+                    </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -112,8 +137,8 @@ export default function Timeline() {
                         className={cn(
                             "px-2 py-1.5 text-[10px] font-medium rounded-md border transition-all",
                             !startDate && !endDate
-                                ? "bg-action-primary/20 border-indigo-500/30 text-indigo-300"
-                                : "bg-zinc-800/50 border-zinc-700/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+                                ? "bg-indigo-100 border-indigo-200 text-indigo-700 dark:bg-action-primary/20 dark:border-indigo-500/30 dark:text-indigo-300"
+                                : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:bg-zinc-800/50 dark:border-zinc-700/50 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
                         )}
                     >
                         All
@@ -131,8 +156,8 @@ export default function Timeline() {
                         className={cn(
                             "px-2 py-1.5 text-[10px] font-medium rounded-md border transition-all",
                             startDate && endDate
-                                ? "bg-action-primary/20 border-indigo-500/30 text-indigo-300"
-                                : "bg-zinc-800/50 border-zinc-700/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+                                ? "bg-indigo-100 border-indigo-200 text-indigo-700 dark:bg-action-primary/20 dark:border-indigo-500/30 dark:text-indigo-300"
+                                : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:bg-zinc-800/50 dark:border-zinc-700/50 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
                         )}
                     >
                         This Week
@@ -145,14 +170,14 @@ export default function Timeline() {
                         onSelect={(d) => setStartDate(d?.toISOString())}
                         placeholder="Start"
                         className="w-full"
-                        buttonClassName="w-full justify-between bg-zinc-800/30 border-zinc-700/50 text-[10px] h-7 px-2"
+                        buttonClassName="w-full justify-between bg-white border-zinc-200 text-zinc-700 dark:bg-zinc-800/30 dark:border-zinc-700/50 dark:text-zinc-400 text-[10px] h-7 px-2"
                     />
                     <DatePicker
                         date={endDate ? new Date(endDate) : undefined}
                         onSelect={(d) => setEndDate(d?.toISOString())}
                         placeholder="End"
                         className="w-full"
-                        buttonClassName="w-full justify-between bg-zinc-800/30 border-zinc-700/50 text-[10px] h-7 px-2"
+                        buttonClassName="w-full justify-between bg-white border-zinc-200 text-zinc-700 dark:bg-zinc-800/30 dark:border-zinc-700/50 dark:text-zinc-400 text-[10px] h-7 px-2"
                     />
                 </div>
             </div>

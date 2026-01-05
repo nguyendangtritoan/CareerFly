@@ -1,38 +1,61 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { db, generateId } from '../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
+import Dexie from 'dexie';
+import { useAuth } from './useAuth';
 
 export function useLogs({ startDate, endDate } = {}) {
+    const { user, loading: authLoading } = useAuth();
+    const userId = user ? user.uid : 'guest';
+
     // Use useLiveQuery for real-time updates from Dexie
     const logs = useLiveQuery(
         () => {
-            let collection = db.logs.orderBy('dateIso').reverse();
+            // Wait for auth to settle. If loading, verify what we should do.
+            // Actually useLiveQuery runs immediately. 
+            // If we are loading, we might want to return null/empty or skip array fetch?
+            // But we can't easily "skip" inside the callback based on outer variable if we want it to be reactive? 
+            // Actually we can:
+            if (authLoading) return [];
 
+            // If date range is provided, use composite index [userId+dateIso]
             if (startDate && endDate) {
-                // Ensure full day coverage
                 const end = new Date(endDate);
                 end.setHours(23, 59, 59, 999);
 
-                // Dexie strings comparison works for ISO dates
-                // range: [min, max]
-                collection = db.logs.where('dateIso').between(
-                    new Date(startDate).toISOString(),
-                    end.toISOString(),
-                    true,
-                    true
-                ).reverse();
+                // Dexie composite key range: [userId, startDate] -> [userId, endDate]
+                return db.logs
+                    .where('[userId+dateIso]')
+                    .between(
+                        [userId, new Date(startDate).toISOString()],
+                        [userId, end.toISOString()],
+                        true,
+                        true
+                    )
+                    .reverse()
+                    .toArray();
             }
 
-            return collection.toArray();
+            // If no date range, fallback to fetching all for user
+            return db.logs
+                .where('[userId+dateIso]')
+                .between(
+                    [userId, Dexie.minKey],
+                    [userId, Dexie.maxKey]
+                )
+                .reverse()
+                .toArray();
         },
-        [startDate, endDate]
+        [startDate, endDate, userId, authLoading] // Re-run when user or loading changes
     );
 
-    return { logs, isLoading: !logs };
+    return { logs, isLoading: !logs || authLoading };
 }
 
 export function useAddLog() {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
+    const userId = user ? user.uid : 'guest';
 
     return useMutation({
         mutationFn: async ({ json, text, impact = 'medium', date }) => {
@@ -66,28 +89,42 @@ export function useAddLog() {
 
                 // Strip the keyword from text
                 plainText = plainText.replace(nlpMatch[0], '');
-                // Also update the JSON body text if possible? 
-                // Creating a new JSON from scratch is hard, so we just update the plainTextSnippet
-                // and rely on the UI to maybe re-fetch or clear?
-                // Ideally we'd modify the JSON content node, but Tiptap JSON structure is deep.
-                // For MVP, we strip it from the snippet and rely on the fact that
-                // the user intended to "meta-command" this.
-
                 dateIso = targetDate.toISOString();
             }
 
             // 1. Tag Extraction (#Tag)
             const tags = (plainText.match(/#[\w-]+/g) || []).map(t => t.substring(1));
 
+            // PERF-CAT: Performance Category Extraction (@Category)
+            const validCategories = [
+                'Quality', 'FunctionalExpertise', 'Productivity',
+                'ServiceExcellence', 'Leadership', 'Innovation', 'Teamwork'
+            ];
+            // Normalize for matching (remove spaces, lowercase)
+            // Regex to find @Word
+            const mentionMatches = (plainText.match(/@[\w]+/g) || []).map(m => m.substring(1));
+
+            const performanceCategories = mentionMatches.filter(m => {
+                // Check if it matches any valid category (case-insensitive)
+                // We handle 'FunctionalExpertise' which might be typed as @FunctionalExpertise or just @Expertise maybe? 
+                // Let's stick to simple matching against the list for now, maybe loosely.
+                return validCategories.some(vc => vc.toLowerCase() === m.toLowerCase());
+            }).map(m => {
+                // Canonicalize
+                return validCategories.find(vc => vc.toLowerCase() === m.toLowerCase());
+            });
+
+
             // Save tags to UserTags collection
             await Promise.all(tags.map(async tag => {
-                const existing = await db.tags.where('label').equals(tag).first();
+                // Check for existing tag for THIS user
+                const existing = await db.tags.where({ userId: userId, label: tag }).first();
                 if (existing) {
                     await db.tags.update(existing.id, { usageCount: existing.usageCount + 1, lastUsed: Date.now() });
                 } else {
                     await db.tags.add({
                         id: generateId(),
-                        userId: 'guest',
+                        userId: userId,
                         label: tag,
                         normalizedLabel: tag.toLowerCase(),
                         category: 'skill', // default
@@ -98,30 +135,19 @@ export function useAddLog() {
             }));
 
             // 2. Smart Ticket Parsing (PROJ-123)
-            // Regex: 2+ uppercase letters, hyphen, 1+ digits. e.g. "PROJ-123", "LINEAR-402"
             const ticketRegex = /\b[A-Z]{2,}-\d+\b/g;
             const ticketMatches = [...new Set(plainText.match(ticketRegex) || [])]; // Deduplicate
             const linkedTicketIds = [];
 
             await Promise.all(ticketMatches.map(async (ticketKey) => {
-                let ticket = await db.externalTickets.where('ticketKey').equals(ticketKey).first();
+                // Scope tickets to userId as well
+                let ticket = await db.externalTickets.where({ userId: userId, ticketKey: ticketKey }).first();
                 const now = new Date().toISOString();
 
                 if (ticket) {
-                    // Update existing
-                    await db.externalTickets.update(ticket.id, {
-                        lastWorkedOn: now,
-                        // We will increment totalLogCount transactionally or lazy update? 
-                        // For now simple atomic read-modify-write is okay for single user.
-                        // Actually dexie update doesn't return new obj, so we use ticket id.
-                    });
-                    // Manual increment since update doesn't support $inc in basic dexie without addons?
-                    // Let's just re-fetch or assume concurrency is low.
-                    // Actually, we can just not store count and compute it? 
-                    // Optimization: store count.
-                    // To be safe:
                     const current = await db.externalTickets.get(ticket.id);
                     await db.externalTickets.update(ticket.id, {
+                        lastWorkedOn: now,
                         totalLogCount: (current.totalLogCount || 0) + 1
                     });
 
@@ -131,8 +157,8 @@ export function useAddLog() {
                     const newId = generateId();
                     await db.externalTickets.add({
                         id: newId,
-                        userId: 'guest',
-                        ticketSystem: 'unknown', // Could infer from PROJ
+                        userId: userId,
+                        ticketSystem: 'unknown',
                         ticketKey: ticketKey,
                         url: '',
                         firstWorkedOn: now,
@@ -147,7 +173,7 @@ export function useAddLog() {
 
             const newLog = {
                 id: generateId(),
-                userId: 'guest',
+                userId: userId,
                 dateIso: dateIso,
                 content: {
                     format: 'tiptap-json',
@@ -160,6 +186,8 @@ export function useAddLog() {
                     mood: 3,
                     impact: impact,
                     isMajorWin: false,
+                    isStarred: false,
+                    performanceCategories: performanceCategories // Store detected categories
                 },
                 syncState: {
                     isSynced: false,
@@ -176,7 +204,6 @@ export function useAddLog() {
             // Trigger Cloud Sync if logged in
             import('../lib/sync').then(({ syncEngine }) => {
                 if (syncEngine.userId) {
-                    // Fetch the full log object to push
                     db.logs.get(newLog.id).then(log => {
                         if (log) syncEngine.pushLog(log);
                     });
@@ -199,15 +226,46 @@ export function useDeleteLog() {
     });
 }
 
-export function useGoals() {
+export function useToggleLogStar() {
     const queryClient = useQueryClient();
-    const goals = useLiveQuery(() => db.careerGoals.toArray());
+
+    return useMutation({
+        mutationFn: async (id) => {
+            const log = await db.logs.get(id);
+            if (log) {
+                const currentMeta = log.metadata || {};
+                await db.logs.update(id, {
+                    metadata: {
+                        ...currentMeta,
+                        isStarred: !currentMeta.isStarred
+                    }
+                });
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['logs']);
+        },
+    });
+}
+
+export function useGoals() {
+    const { user, loading: authLoading } = useAuth();
+    const userId = user ? user.uid : 'guest';
+    const queryClient = useQueryClient();
+
+    const goals = useLiveQuery(
+        () => {
+            if (authLoading) return [];
+            return db.careerGoals.where('userId').equals(userId).toArray();
+        },
+        [userId, authLoading]
+    );
 
     const addGoal = useMutation({
         mutationFn: async ({ title, description, targetDate }) => {
             const goal = {
                 id: generateId(),
-                userId: 'guest',
+                userId: userId,
                 title,
                 description,
                 status: 'active',
@@ -235,11 +293,21 @@ export function useGoals() {
         }
     });
 
-    return { goals, isLoading: !goals, addGoal, toggleGoalStatus, deleteGoal };
+    return { goals, isLoading: !goals || authLoading, addGoal, toggleGoalStatus, deleteGoal };
 
 }
 
 export function useTags() {
-    const tags = useLiveQuery(() => db.tags.orderBy('usageCount').reverse().toArray());
-    return { tags, isLoading: !tags };
+    const { user, loading: authLoading } = useAuth();
+    const userId = user ? user.uid : 'guest';
+
+    const tags = useLiveQuery(
+        async () => {
+            if (authLoading) return [];
+            const userTags = await db.tags.where('userId').equals(userId).toArray();
+            return userTags.sort((a, b) => b.usageCount - a.usageCount);
+        },
+        [userId, authLoading]
+    );
+    return { tags, isLoading: !tags || authLoading };
 }

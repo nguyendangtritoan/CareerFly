@@ -22,6 +22,7 @@ export function useStats() {
         if (!filteredLogs) return { topSkills: [], impact: { high: 0, med: 0, low: 0 }, total: 0 };
 
         const skillCounts = {};
+        const perfCategoryCounts = {};
         let impactHigh = 0;
         let impactMed = 0;
         let impactLow = 0;
@@ -31,6 +32,12 @@ export function useStats() {
             log.tags?.forEach(tag => {
                 skillCounts[tag] = (skillCounts[tag] || 0) + 1;
             });
+
+            // Performance Categories (@Category)
+            log.metadata?.performanceCategories?.forEach(cat => {
+                perfCategoryCounts[cat] = (perfCategoryCounts[cat] || 0) + 1;
+            });
+
             // Impact
             const imp = log.metadata?.impact || 'medium';
             if (imp === 'high') impactHigh++;
@@ -46,6 +53,7 @@ export function useStats() {
 
         return {
             topSkills,
+            performanceCategories: perfCategoryCounts, // Return raw counts
             impact: {
                 high: impactHigh / total,
                 med: impactMed / total,

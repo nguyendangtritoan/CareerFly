@@ -10,14 +10,12 @@ import { cn } from '../lib/utils';
 
 import { useStats } from '../hooks/useStats';
 
+import LogEntry from '../components/LogEntry';
+
 export default function Dashboard() {
-    const { stats, isLoading } = useStats();
+    const { stats, isLoading, filteredLogs } = useStats(); // Get filteredLogs from hook
     console.log('[Dashboard] Render. isLoading:', isLoading, 'Stats:', stats);
     const { isManagerMode, toggleManagerMode } = useStore();
-
-    // Use stats.total instead of filtering manually again just for count if needed, 
-    // but filteredLogs is internal to the hook now unless we expose it.
-    // The UI uses 'stats' object directly.
 
     if (isLoading) {
         console.log('[Dashboard] Still loading...');
@@ -49,68 +47,125 @@ export default function Dashboard() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-                {/* 0. Heatmap (FR-09) */}
-                <div className="md:col-span-3">
-                    <Heatmap />
-                </div>
-
-                {/* 1. Impact Distribution */}
-                <div className="md:col-span-2 p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
-                    <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-1">Impact Distribution</h3>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-500 mb-6">Visualizing your contribution intensity.</p>
-
-                    <div className="space-y-6">
-                        <div className="relative pt-2">
-                            <div className="flex mb-2 items-center justify-between text-xs uppercase tracking-wider font-semibold text-text-secondary dark:text-zinc-400">
-                                <span>Impact Breakdown</span>
-                                <span className="text-text-primary dark:text-zinc-50">{stats.total} Logs Total</span>
-                            </div>
-                            <div className="h-4 flex rounded-full overflow-hidden bg-gray-200 dark:bg-zinc-800">
-                                <div style={{ width: `${stats.impact.high * 100}%` }} className="bg-violet-500 transition-all duration-1000" title="High Impact"></div>
-                                <div style={{ width: `${stats.impact.med * 100}%` }} className="bg-amber-500 transition-all duration-1000" title="Medium Impact"></div>
-                                <div style={{ width: `${stats.impact.low * 100}%` }} className="bg-blue-500 transition-all duration-1000" title="Low Impact"></div>
-                            </div>
-                            <div className="flex gap-4 mt-3 text-xs">
-                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-violet-500"></div> High</div>
-                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Medium</div>
-                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Low</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 2. Top Skills & Learned Bank */}
-                <div className="space-y-6">
-                    <div className="p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
-                        <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-4">Top Skills</h3>
-                        <div className="space-y-3">
-                            {stats.topSkills.length > 0 ? stats.topSkills.map(([skill, count], i) => (
-                                <div key={skill} className="flex items-center justify-between group">
-                                    <span className="text-sm text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
-                                        <span className="text-zinc-400 dark:text-zinc-600 font-mono text-xs">0{i + 1}</span>
-                                        {skill}
-                                    </span>
-                                    <span className="text-xs font-mono text-text-primary dark:text-text-secondary bg-action-primary/10 px-2 py-0.5 rounded-full">{count}</span>
-                                </div>
-                            )) : (
-                                <div className="text-zinc-500 dark:text-zinc-500 text-sm italic">No skills tagged yet.</div>
+            {isManagerMode ? (
+                // Manager Mode View: Timeline of Wins
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                    <div className="p-6 rounded-card border border-amber-500/30 bg-zinc-900/50">
+                        <h2 className="text-xl font-bold text-amber-500 mb-4 flex items-center gap-2">
+                            <Sparkles size={20} />
+                            Key Achievements & Impact
+                        </h2>
+                        <div className="space-y-6">
+                            {filteredLogs && filteredLogs.length > 0 ? (
+                                filteredLogs
+                                    // Optional: Re-sort here if needed, but useStats/useLogs is typically date desc
+                                    .map(log => (
+                                        <LogEntry
+                                            key={log.id}
+                                            log={log}
+                                            onDelete={() => { }} // No delete in Manager Mode
+                                            isManagerMode={true}
+                                        />
+                                    ))
+                            ) : (
+                                <div className="text-zinc-500 italic">No public logs found for this period.</div>
                             )}
                         </div>
                     </div>
                 </div>
+            ) : (
+                // Normal Dashboard View
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-                <div className="md:col-span-3">
-                    <LearnedBank className="mb-6" />
-                    <TemplateExporter />
+                    {/* 0. Heatmap (FR-09) */}
+                    <div className="md:col-span-3">
+                        <Heatmap />
+                    </div>
+
+                    {/* 1. Impact Distribution */}
+                    <div className="md:col-span-2 p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
+                        <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-1">Impact Distribution</h3>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-500 mb-6">Visualizing your contribution intensity.</p>
+
+                        <div className="space-y-6">
+                            <div className="relative pt-2">
+                                <div className="flex mb-2 items-center justify-between text-xs uppercase tracking-wider font-semibold text-text-secondary dark:text-zinc-400">
+                                    <span>Impact Breakdown</span>
+                                    <span className="text-text-primary dark:text-zinc-50">{stats.total} Logs Total</span>
+                                </div>
+                                <div className="h-4 flex rounded-full overflow-hidden bg-gray-200 dark:bg-zinc-800">
+                                    <div style={{ width: `${stats.impact.high * 100}%` }} className="bg-violet-500 transition-all duration-1000" title="High Impact"></div>
+                                    <div style={{ width: `${stats.impact.med * 100}%` }} className="bg-amber-500 transition-all duration-1000" title="Medium Impact"></div>
+                                    <div style={{ width: `${stats.impact.low * 100}%` }} className="bg-blue-500 transition-all duration-1000" title="Low Impact"></div>
+                                </div>
+                                <div className="flex gap-4 mt-3 text-xs">
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-violet-500"></div> High</div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Medium</div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Low</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Performance Focus (New Widget) */}
+                    <div className="p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
+                        <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-4">Performance Focus</h3>
+                        {stats.performanceCategories && Object.keys(stats.performanceCategories).length > 0 ? (
+                            <div className="space-y-3">
+                                {Object.entries(stats.performanceCategories)
+                                    .sort(([, a], [, b]) => b - a)
+                                    .map(([cat, count]) => (
+                                        <div key={cat} className="space-y-1">
+                                            <div className="flex justify-between text-xs">
+                                                <span className="font-medium text-zinc-700 dark:text-zinc-300">{cat}</span>
+                                                <span className="text-zinc-500">{count}</span>
+                                            </div>
+                                            <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-indigo-500 rounded-full"
+                                                    style={{ width: `${Math.min((count / stats.total) * 100 * 2, 100)}%` }} // *2 just to make small counts visible, or use strict %
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
+                        ) : (
+                            <div className="text-sm text-zinc-500 italic">No performance categories tagged yet. Use @Quality, @Innovation, etc.</div>
+                        )}
+                    </div>
+
+                    {/* 2. Top Skills & Learned Bank */}
+                    <div className="space-y-6">
+                        <div className="p-6 rounded-card border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900">
+                            <h3 className="text-lg font-medium text-text-primary dark:text-zinc-50 mb-4">Top Skills</h3>
+                            <div className="space-y-3">
+                                {stats.topSkills.length > 0 ? stats.topSkills.map(([skill, count], i) => (
+                                    <div key={skill} className="flex items-center justify-between group">
+                                        <span className="text-sm text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                            <span className="text-zinc-400 dark:text-zinc-600 font-mono text-xs">0{i + 1}</span>
+                                            {skill}
+                                        </span>
+                                        <span className="text-xs font-mono text-text-primary dark:text-text-secondary bg-action-primary/10 px-2 py-0.5 rounded-full">{count}</span>
+                                    </div>
+                                )) : (
+                                    <div className="text-zinc-500 dark:text-zinc-500 text-sm italic">No skills tagged yet.</div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="md:col-span-3">
+                        <LearnedBank className="mb-6" />
+                        <TemplateExporter />
+                    </div>
+
+                    {/* 3. AI Generator */}
+                    <AIPromptGenerator className="md:col-span-3" />
                 </div>
-
-                {/* 3. AI Generator */}
-                <AIPromptGenerator className="md:col-span-3" />
-            </div>
-            {/* Friday Ritual (Floating) */}
-            <FridayRitual />
-        </div>
+            )
+            }
+            {/* Friday Ritual (Floating) - Always show? Maybe hide in Manager Mode */}
+            {!isManagerMode && <FridayRitual />}
+        </div >
     )
 }

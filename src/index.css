@@ -18,6 +18,21 @@
     --foreground: 0 0% 98%;
   }
 
+  /* Tippy Overrides for Clean Autocomplete */
+  .tippy-box {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .tippy-content {
+    padding: 0 !important;
+  }
+
+  .tippy-arrow {
+    display: none !important;
+  }
+
   html,
   body,
   #root {
@@ -65,6 +80,25 @@
 
   .placeholder-node p {
     @apply m-0 min-h-[1.5rem];
+  }
+
+  /* Text Editor Placeholder (Main) */
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply block text-zinc-500 dark:text-zinc-500 italic pointer-events-none h-0 float-left;
+  }
+
+  /* Mention Styles (No Box, just text) */
+  .mention-tag {
+    @apply text-rose-500 dark:text-rose-400 font-medium bg-transparent border-0 shadow-none;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .mention-category {
+    @apply text-indigo-500 dark:text-indigo-400 font-medium bg-transparent border-0 shadow-none;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
 
   /* Notebook Grid Pattern */

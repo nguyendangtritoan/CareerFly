@@ -6,18 +6,24 @@ import { cn } from '../lib/utils';
 import { STANDARD_TEMPLATES } from '../lib/templates';
 import { db } from '../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useAuth } from '../hooks/useAuth';
 
 export default function TemplateSelector({ onSelect, onCancel }) {
     const [search, setSearch] = useState('');
     const [mounted, setMounted] = useState(false);
+    const { user } = useAuth();
+    const userId = user ? user.uid : 'guest';
 
     useEffect(() => {
         setMounted(true);
         return () => setMounted(false);
     }, []);
 
-    // Fetch custom templates
-    const customTemplates = useLiveQuery(() => db.templates.toArray()) || [];
+    // Fetch custom templates for the current user
+    const customTemplates = useLiveQuery(
+        () => db.templates.where('userId').equals(userId).toArray(),
+        [userId]
+    ) || [];
 
     const iconMap = {
         'Bug': Bug,

@@ -15,8 +15,13 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if isOwner(userId);
       
-      // Subcollections (logs, goals, etc.)
-      match /{document=**} {
+      // Explicitly allow logs subcollection
+      match /logs/{logId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Explicitly allow templates subcollection
+      match /templates/{templateId} {
         allow read, write: if isOwner(userId);
       }
     }

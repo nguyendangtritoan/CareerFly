@@ -83,25 +83,45 @@ export default function Layout() {
 
                 {/* Island 3: Footer/User */}
                 <div className="gradient-pastel-animated rounded-2xl border border-border-subtle dark:border-zinc-900 shadow-card p-2 shrink-0">
-                    <button
-                        onClick={() => user ? signOut() : signInWithGoogle()}
-                        className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group",
-                            "text-gray-500 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-zinc-300"
-                        )}
-                    >
-                        {user ? (
-                            <>
-                                <LogOut size={20} className="text-gray-500 dark:text-zinc-600 group-hover:text-gray-900 dark:group-hover:text-zinc-400" />
-                                {isSidebarOpen && <span>Sign Out</span>}
-                            </>
-                        ) : (
-                            <>
-                                <div className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-[10px] font-bold">G</div>
-                                {isSidebarOpen && <span>Sign In</span>}
-                            </>
-                        )}
-                    </button>
+                    {user ? (
+                        <div className={cn("flex items-center gap-2", isSidebarOpen ? "px-2 pb-1 pt-1" : "justify-center")}>
+                            <img
+                                src={user.photoURL}
+                                alt={user.displayName}
+                                className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm object-cover"
+                            />
+                            {isSidebarOpen && (
+                                <>
+                                    <div className="flex-1 min-w-0 flex flex-col items-start overflow-hidden">
+                                        <span className="text-sm font-medium truncate w-full text-zinc-900 dark:text-zinc-200">
+                                            {user.displayName}
+                                        </span>
+                                        <span className="text-[10px] text-zinc-500 truncate w-full">
+                                            Free Plan
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={signOut}
+                                        className="p-1.5 rounded-md hover:bg-red-50 hover:text-red-500 text-zinc-400 transition-colors"
+                                        title="Sign Out"
+                                    >
+                                        <LogOut size={16} />
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <button
+                            onClick={signInWithGoogle}
+                            className={cn(
+                                "w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group",
+                                "text-gray-500 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-zinc-300"
+                            )}
+                        >
+                            <div className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-[10px] font-bold">G</div>
+                            {isSidebarOpen && <span>Sign In</span>}
+                        </button>
+                    )}
                 </div>
             </aside>
 

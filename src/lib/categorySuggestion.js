@@ -1,27 +1,13 @@
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
 import SuggestionList from '../components/SuggestionList'
-import { db } from './db'
+import { PERFORMANCE_CATEGORIES } from './constants'
 
 export default {
-    items: async ({ query }) => {
-        // Fetch unique tags from DB
-        const tags = await db.tags.toArray();
-        const tagLabels = tags.map(t => t.label);
-
-        // Also scan recent logs for ad-hoc tags if strictly needed, but let's stick to 'UserTags' collection
-
-        // Filter
-        const results = tagLabels
+    items: ({ query }) => {
+        return PERFORMANCE_CATEGORIES
             .filter(item => item.toLowerCase().startsWith(query.toLowerCase()))
             .slice(0, 5);
-
-        // If query is new, suggest it as a new tag option (handled in UI mostly, but here we return it)
-        if (query && !results.includes(query)) {
-            results.push(query);
-        }
-
-        return results;
     },
 
     render: () => {
@@ -31,7 +17,7 @@ export default {
         return {
             onStart: props => {
                 component = new ReactRenderer(SuggestionList, {
-                    props: { ...props, char: '#' },
+                    props: { ...props, char: '@' }, // Pass context char
                     editor: props.editor,
                 })
 
@@ -51,7 +37,7 @@ export default {
             },
 
             onUpdate(props) {
-                component.updateProps({ ...props, char: '#' })
+                component.updateProps({ ...props, char: '@' })
 
                 if (!props.clientRect) {
                     return

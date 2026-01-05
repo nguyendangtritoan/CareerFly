@@ -12,8 +12,8 @@ import { cn } from '../lib/utils'
 import TemplateSelector from './TemplateSelector'
 import PlaceholderNode from '../lib/extensions/PlaceholderNode'
 import suggestion from '../lib/suggestion'
+import categorySuggestion from '../lib/categorySuggestion'
 import { db } from '../lib/db'
-import 'tippy.js/dist/tippy.css'
 
 const PROMPTS = [
     "What was the hardest bug you squashed today?",
@@ -24,24 +24,47 @@ const PROMPTS = [
     "What code did you delete today?"
 ];
 
+// Define a custom Mention extension for Performance Categories (@)
+// using a different name so they don't conflict with normal mentions (#)
+const PerformanceMention = Mention.extend({
+    name: 'performanceMention',
+});
+
+import { useAuth } from '../hooks/useAuth';
+
 export default function Composer({ onSave, className, initialContent }) {
     const [impact, setImpact] = useState('medium');
     const [logDate, setLogDate] = useState(new Date().toISOString());
     const [prompt, setPrompt] = useState(null);
     const [showTemplateSelector, setShowTemplateSelector] = useState(false);
     const idleTimerRef = useRef(null);
+    const { user } = useAuth();
+    const userId = user ? user.uid : 'guest';
 
     const editor = useEditor({
         extensions: [
             StarterKit,
             PlaceholderNode,
             Placeholder.configure({
-                placeholder: "What did you work on today? (Type / for commands, # for tags)",
+                placeholder: "What did you work on today? (Type / for commands, # for tags, @ for categories)",
             }),
+            // 1. Tags (#) - Default Mention
             Mention.configure({
                 HTMLAttributes: { class: 'mention-tag' },
-                renderLabel: ({ options, node }) => `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`,
-                suggestion: suggestion
+                renderLabel: ({ node }) => `#${node.attrs.label ?? node.attrs.id}`,
+                suggestion: {
+                    ...suggestion,
+                    char: '#'
+                }
+            }),
+            // 2. Performance Categories (@) - Custom Extension
+            PerformanceMention.configure({
+                HTMLAttributes: { class: 'mention-category text-indigo-500 bg-indigo-500/10 border-indigo-500/20' },
+                renderLabel: ({ node }) => `@${node.attrs.label ?? node.attrs.id}`,
+                suggestion: {
+                    ...categorySuggestion,
+                    char: '@'
+                }
             }),
             BubbleMenuExtension.configure({
                 element: document.querySelector('.bubble-menu'),
@@ -135,7 +158,7 @@ export default function Composer({ onSave, className, initialContent }) {
         if (name) {
             await db.templates.add({
                 id: crypto.randomUUID(),
-                userId: 'guest', // or current user
+                userId: userId,
                 name,
                 content: selectedHtml,
                 createdAt: new Date().toISOString()
@@ -171,7 +194,7 @@ export default function Composer({ onSave, className, initialContent }) {
         <div className={cn("relative group rounded-card border border-border-input dark:border-zinc-800 bg-[#e8efe8] dark:bg-zinc-900 p-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 shadow-sm", className)}>
             <div className="min-h-[60px] relative">
                 {editor && (
-                    <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+                    <BubbleMenu editor={editor}>
                         <button
                             onClick={handleSaveTemplate}
                             className="flex items-center gap-1.5 bg-surface dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-3 py-1.5 rounded-lg shadow-xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-xs font-medium"

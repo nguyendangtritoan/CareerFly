@@ -48,18 +48,20 @@ export default forwardRef((props, ref) => {
     }))
 
     return (
-        <div className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl overflow-hidden min-w-[12rem] p-1">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl overflow-hidden min-w-[12rem] p-1">
             {props.items.length ? (
                 props.items.map((item, index) => (
                     <button
                         className={cn(
                             "flex items-center w-full text-left px-2 py-1.5 text-sm rounded-md transition-colors",
-                            index === selectedIndex ? "bg-action-primary text-white" : "text-zinc-300 hover:bg-zinc-800"
+                            index === selectedIndex
+                                ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-medium"
+                                : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                         )}
                         key={index}
                         onClick={() => selectItem(index)}
                     >
-                        #{item}
+                        {props.char || '#'}{item}
                     </button>
                 ))
             ) : (
