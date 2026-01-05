@@ -32,7 +32,7 @@ export default function Layout() {
                 {/* Island 1: Header/Logo */}
                 <div className="gradient-pastel-animated rounded-2xl border border-border-subtle dark:border-zinc-900 shadow-card p-4 h-16 flex items-center gap-3 shrink-0">
                     <img
-                        src="/logo.png"
+                        src={`${import.meta.env.BASE_URL}logo.png`}
                         alt="CareerFly Logo"
                         className="h-10 w-10 rounded-lg shadow-sm object-cover shrink-0 select-none"
                     />
