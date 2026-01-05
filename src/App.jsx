@@ -25,7 +25,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <div className="min-h-screen w-full bg-canvas dark:bg-zinc-950 text-text-primary dark:text-zinc-50 font-sans selection:bg-action-primary/10 relative">
 
           <Routes>
