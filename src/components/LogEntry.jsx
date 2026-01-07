@@ -128,7 +128,7 @@ export default function LogEntry({ log, onDelete, isManagerMode = false }) {
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         {!isEditing ? (
                             <>
-                                <button onClick={() => setIsEditing(true)} className="text-zinc-500 hover:text-action-primary transition-all p-1 mr-1">
+                                <button onClick={() => setIsEditing(true)} className="text-zinc-500 hover:text-[#39ff14] transition-all p-1 mr-1">
                                     Edit
                                 </button>
                                 <button onClick={() => onDelete(log.id)} className="text-zinc-500 hover:text-red-500 transition-all p-1">

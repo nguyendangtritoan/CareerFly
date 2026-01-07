@@ -63,6 +63,15 @@
     @apply bg-zinc-400 dark:bg-zinc-700;
   }
 
+  /* Global Section Styles */
+  ::selection {
+    @apply bg-pink-500/30 text-pink-900 dark:text-pink-100;
+  }
+
+  .dark ::selection {
+    @apply bg-pink-500/40 text-white;
+  }
+
   /* Placeholder Node Styles */
   .placeholder-node {
     @apply rounded px-2 py-1 my-1 border border-gray-300 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 transition-all relative min-h-[2rem];
