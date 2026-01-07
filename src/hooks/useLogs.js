@@ -219,9 +219,16 @@ export function useDeleteLog() {
     return useMutation({
         mutationFn: async (id) => {
             await db.logs.delete(id);
+            return id;
         },
-        onSuccess: () => {
+        onSuccess: (id) => {
             queryClient.invalidateQueries(['logs']);
+            // Trigger Cloud Sync if logged in
+            import('../lib/sync').then(({ syncEngine }) => {
+                if (syncEngine.userId) {
+                    syncEngine.deleteLog(id);
+                }
+            });
         },
     });
 }

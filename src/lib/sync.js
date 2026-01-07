@@ -21,8 +21,10 @@ export class SyncEngine {
                 if (change.type === 'added' || change.type === 'modified') {
                     const data = change.doc.data();
                     this.mergeToLocal(data);
+                } else if (change.type === 'removed') {
+                    const logId = change.doc.id;
+                    localDb.logs.delete(logId);
                 }
-                // Handle deletions...
             });
         });
 
@@ -46,6 +48,18 @@ export class SyncEngine {
             console.log(`Pushed log ${log.id} to cloud`);
         } catch (error) {
             console.error("Sync Push Error", error);
+        }
+    }
+
+    async deleteLog(logId) {
+        if (!this.userId || !logId) return;
+        try {
+            // Delete from Firestore
+            const docRef = doc(firestore, 'users', this.userId, 'logs', logId);
+            await import('firebase/firestore').then(({ deleteDoc }) => deleteDoc(docRef));
+            console.log(`Deleted log ${logId} from cloud`);
+        } catch (error) {
+            console.error("Sync Delete Error", error);
         }
     }
 
