@@ -5,6 +5,7 @@ import { Trash2, Star } from 'lucide-react'
 import { cn } from '../lib/utils'
 import Mention from '@tiptap/extension-mention'
 import PlaceholderNode from '../lib/extensions/PlaceholderNode'
+import { HashtagDecoration } from '../lib/extensions/HashtagDecoration'
 import { useToggleLogStar, useUpdateLog } from '../hooks/useLogs'
 
 const PerformanceMention = Mention.extend({
@@ -38,7 +39,8 @@ export default function LogEntry({ log, onDelete, isManagerMode = false }) {
                     class: 'mention-category',
                 },
                 renderLabel: ({ node }) => `@${node.attrs.label ?? node.attrs.id}`,
-            })
+            }),
+            HashtagDecoration
         ],
         content: content.body, // Load JSON
         editorProps: {

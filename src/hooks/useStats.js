@@ -53,6 +53,7 @@ export function useStats() {
 
         return {
             topSkills,
+            tagCounts: skillCounts, // Full list for LearnedBank
             performanceCategories: perfCategoryCounts, // Return raw counts
             impact: {
                 high: impactHigh / total,

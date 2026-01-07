@@ -64,12 +64,18 @@
   }
 
   /* Global Section Styles */
+  /* Global Section Styles */
   ::selection {
-    @apply bg-pink-500/30 text-pink-900 dark:text-pink-100;
+    background-color: rgba(236, 72, 153, 0.3);
+    /* pink-500/30 */
+    color: #831843;
+    /* pink-900 */
   }
 
   .dark ::selection {
-    @apply bg-pink-500/40 text-white;
+    background-color: #db2777 !important;
+    /* pink-600 */
+    color: #ffffff !important;
   }
 
   /* Placeholder Node Styles */
@@ -99,13 +105,13 @@
 
   /* Mention Styles (No Box, just text) */
   .mention-tag {
-    @apply text-rose-500 dark:text-rose-400 font-medium bg-transparent border-0 shadow-none;
+    @apply text-rose-600 dark:text-[#ff005d] font-medium bg-transparent border-0 shadow-none px-0;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
 
   .mention-category {
-    @apply text-indigo-500 dark:text-indigo-400 font-medium bg-transparent border-0 shadow-none;
+    @apply text-indigo-600 dark:text-[#00ffff] font-medium bg-transparent border-0 shadow-none px-0;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }

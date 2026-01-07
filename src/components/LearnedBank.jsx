@@ -1,10 +1,20 @@
 import React from 'react';
-import { useTags } from '../hooks/useLogs';
+import { useStats } from '../hooks/useStats';
 import { cn } from '../lib/utils';
 import { Cloud } from 'lucide-react';
 
 export default function LearnedBank({ className }) {
-    const { tags, isLoading } = useTags();
+    const { stats, isLoading } = useStats();
+
+    // Convert dictionary to array for mapping
+    const tags = React.useMemo(() => {
+        if (!stats?.tagCounts) return [];
+        return Object.entries(stats.tagCounts).map(([label, count]) => ({
+            id: label,
+            label,
+            usageCount: count
+        })).sort((a, b) => b.usageCount - a.usageCount);
+    }, [stats]);
 
     // Helper to normalize font size between 0.75rem and 1.5rem
     const getFontSize = (count, max) => {
