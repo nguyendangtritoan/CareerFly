@@ -12,9 +12,7 @@ export default function Timeline() {
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState(false);
     const [filterStarred, setFilterStarred] = React.useState(false);
     const [dateRange, setDateRange] = React.useState(() => {
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        return { start: now.toISOString(), end: now.toISOString() };
+        return { start: '', end: '' };
     });
 
     // Derived state for DatePicker

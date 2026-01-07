@@ -52,6 +52,124 @@ export function useLogs({ startDate, endDate } = {}) {
     return { logs, isLoading: !logs || authLoading };
 }
 
+// Helper to extract metadata (tags, tickets, categories)
+async function processLogMetadata(plainText, userId) {
+    // 3. Natural Language Date Parsing (FR-11)
+    // Patterns: "Yesterday:", "Last Friday:", "2 days ago:"
+    const nlpRegex = /^(yesterday|last friday|last monday|last tuesday|last wednesday|last thursday|last saturday|last sunday|(\d+)\s+days?\s+ago):\s*/i;
+    const nlpMatch = plainText.match(nlpRegex);
+    let dateIso = null;
+    let cleanText = plainText;
+
+    if (nlpMatch) {
+        const phrase = nlpMatch[1].toLowerCase();
+        const daysAgoMatch = nlpMatch[2];
+        let targetDate = new Date();
+
+        if (phrase === 'yesterday') {
+            targetDate.setDate(targetDate.getDate() - 1);
+        } else if (daysAgoMatch) {
+            targetDate.setDate(targetDate.getDate() - parseInt(daysAgoMatch));
+        } else if (phrase.startsWith('last ')) {
+            const dayName = phrase.replace('last ', '');
+            const daysMap = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+            const targetDay = daysMap[dayName];
+            const currentDay = targetDate.getDay();
+            let daysToSubtract = currentDay - targetDay;
+            if (daysToSubtract <= 0) daysToSubtract += 7;
+            targetDate.setDate(targetDate.getDate() - daysToSubtract);
+        }
+
+        // Strip the keyword from text
+        cleanText = cleanText.replace(nlpMatch[0], '');
+        dateIso = targetDate.toISOString();
+    }
+
+    // 1. Tag Extraction (#Tag)
+    const tags = (cleanText.match(/#[\w-]+/g) || []).map(t => t.substring(1));
+
+    // PERF-CAT: Performance Category Extraction (@Category)
+    const validCategories = [
+        'Quality', 'FunctionalExpertise', 'Productivity',
+        'ServiceExcellence', 'Leadership', 'Innovation', 'Teamwork'
+    ];
+    // Normalize for matching (remove spaces, lowercase)
+    // Regex to find @Word
+    const mentionMatches = (cleanText.match(/@[\w]+/g) || []).map(m => m.substring(1));
+
+    const performanceCategories = mentionMatches.filter(m => {
+        // Check if it matches any valid category (case-insensitive)
+        return validCategories.some(vc => vc.toLowerCase() === m.toLowerCase());
+    }).map(m => {
+        // Canonicalize
+        return validCategories.find(vc => vc.toLowerCase() === m.toLowerCase());
+    });
+
+
+    // Save tags to UserTags collection
+    await Promise.all(tags.map(async tag => {
+        // Check for existing tag for THIS user
+        const existing = await db.tags.where({ userId: userId, label: tag }).first();
+        if (existing) {
+            await db.tags.update(existing.id, { usageCount: existing.usageCount + 1, lastUsed: Date.now() });
+        } else {
+            await db.tags.add({
+                id: generateId(),
+                userId: userId,
+                label: tag,
+                normalizedLabel: tag.toLowerCase(),
+                category: 'skill', // default
+                usageCount: 1,
+                lastUsed: Date.now()
+            });
+        }
+    }));
+
+    // 2. Smart Ticket Parsing (PROJ-123)
+    const ticketRegex = /\b[A-Z]{2,}-\d+\b/g;
+    const ticketMatches = [...new Set(cleanText.match(ticketRegex) || [])]; // Deduplicate
+    const linkedTicketIds = [];
+
+    await Promise.all(ticketMatches.map(async (ticketKey) => {
+        // Scope tickets to userId as well
+        let ticket = await db.externalTickets.where({ userId: userId, ticketKey: ticketKey }).first();
+        const now = new Date().toISOString();
+
+        if (ticket) {
+            const current = await db.externalTickets.get(ticket.id);
+            await db.externalTickets.update(ticket.id, {
+                lastWorkedOn: now,
+                totalLogCount: (current.totalLogCount || 0) + 1
+            });
+
+            linkedTicketIds.push(ticket.id);
+        } else {
+            // Create new
+            const newId = generateId();
+            await db.externalTickets.add({
+                id: newId,
+                userId: userId,
+                ticketSystem: 'unknown',
+                ticketKey: ticketKey,
+                url: '',
+                firstWorkedOn: now,
+                lastWorkedOn: now,
+                totalLogCount: 1,
+                status: 'active'
+            });
+            linkedTicketIds.push(newId);
+        }
+    }));
+
+    return {
+        cleanText,
+        tags,
+        performanceCategories,
+        linkedTicketIds,
+        parsedDateIso: dateIso
+    };
+}
+
 export function useAddLog() {
     const queryClient = useQueryClient();
     const { user } = useAuth();
@@ -60,125 +178,21 @@ export function useAddLog() {
     return useMutation({
         mutationFn: async ({ json, text, impact = 'medium', date }) => {
             const contentBody = json || {};
-            let plainText = text || '';
-            let dateIso = date ? new Date(date).toISOString() : new Date().toISOString();
 
-            // 3. Natural Language Date Parsing (FR-11)
-            // Patterns: "Yesterday:", "Last Friday:", "2 days ago:"
-            const nlpRegex = /^(yesterday|last friday|last monday|last tuesday|last wednesday|last thursday|last saturday|last sunday|(\d+)\s+days?\s+ago):\s*/i;
-            const nlpMatch = plainText.match(nlpRegex);
+            // Re-use processing logic
+            const { cleanText, tags, performanceCategories, linkedTicketIds, parsedDateIso } = await processLogMetadata(text || '', userId);
 
-            if (nlpMatch) {
-                const phrase = nlpMatch[1].toLowerCase();
-                const daysAgoMatch = nlpMatch[2];
-                let targetDate = new Date();
-
-                if (phrase === 'yesterday') {
-                    targetDate.setDate(targetDate.getDate() - 1);
-                } else if (daysAgoMatch) {
-                    targetDate.setDate(targetDate.getDate() - parseInt(daysAgoMatch));
-                } else if (phrase.startsWith('last ')) {
-                    const dayName = phrase.replace('last ', '');
-                    const daysMap = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
-                    const targetDay = daysMap[dayName];
-                    const currentDay = targetDate.getDay();
-                    let daysToSubtract = currentDay - targetDay;
-                    if (daysToSubtract <= 0) daysToSubtract += 7;
-                    targetDate.setDate(targetDate.getDate() - daysToSubtract);
-                }
-
-                // Strip the keyword from text
-                plainText = plainText.replace(nlpMatch[0], '');
-                dateIso = targetDate.toISOString();
-            }
-
-            // 1. Tag Extraction (#Tag)
-            const tags = (plainText.match(/#[\w-]+/g) || []).map(t => t.substring(1));
-
-            // PERF-CAT: Performance Category Extraction (@Category)
-            const validCategories = [
-                'Quality', 'FunctionalExpertise', 'Productivity',
-                'ServiceExcellence', 'Leadership', 'Innovation', 'Teamwork'
-            ];
-            // Normalize for matching (remove spaces, lowercase)
-            // Regex to find @Word
-            const mentionMatches = (plainText.match(/@[\w]+/g) || []).map(m => m.substring(1));
-
-            const performanceCategories = mentionMatches.filter(m => {
-                // Check if it matches any valid category (case-insensitive)
-                // We handle 'FunctionalExpertise' which might be typed as @FunctionalExpertise or just @Expertise maybe? 
-                // Let's stick to simple matching against the list for now, maybe loosely.
-                return validCategories.some(vc => vc.toLowerCase() === m.toLowerCase());
-            }).map(m => {
-                // Canonicalize
-                return validCategories.find(vc => vc.toLowerCase() === m.toLowerCase());
-            });
-
-
-            // Save tags to UserTags collection
-            await Promise.all(tags.map(async tag => {
-                // Check for existing tag for THIS user
-                const existing = await db.tags.where({ userId: userId, label: tag }).first();
-                if (existing) {
-                    await db.tags.update(existing.id, { usageCount: existing.usageCount + 1, lastUsed: Date.now() });
-                } else {
-                    await db.tags.add({
-                        id: generateId(),
-                        userId: userId,
-                        label: tag,
-                        normalizedLabel: tag.toLowerCase(),
-                        category: 'skill', // default
-                        usageCount: 1,
-                        lastUsed: Date.now()
-                    });
-                }
-            }));
-
-            // 2. Smart Ticket Parsing (PROJ-123)
-            const ticketRegex = /\b[A-Z]{2,}-\d+\b/g;
-            const ticketMatches = [...new Set(plainText.match(ticketRegex) || [])]; // Deduplicate
-            const linkedTicketIds = [];
-
-            await Promise.all(ticketMatches.map(async (ticketKey) => {
-                // Scope tickets to userId as well
-                let ticket = await db.externalTickets.where({ userId: userId, ticketKey: ticketKey }).first();
-                const now = new Date().toISOString();
-
-                if (ticket) {
-                    const current = await db.externalTickets.get(ticket.id);
-                    await db.externalTickets.update(ticket.id, {
-                        lastWorkedOn: now,
-                        totalLogCount: (current.totalLogCount || 0) + 1
-                    });
-
-                    linkedTicketIds.push(ticket.id);
-                } else {
-                    // Create new
-                    const newId = generateId();
-                    await db.externalTickets.add({
-                        id: newId,
-                        userId: userId,
-                        ticketSystem: 'unknown',
-                        ticketKey: ticketKey,
-                        url: '',
-                        firstWorkedOn: now,
-                        lastWorkedOn: now,
-                        totalLogCount: 1,
-                        status: 'active'
-                    });
-                    linkedTicketIds.push(newId);
-                }
-            }));
-
+            // Prefer explicit date, then NLP date, then now
+            let finalDateIso = date ? new Date(date).toISOString() : (parsedDateIso || new Date().toISOString());
 
             const newLog = {
                 id: generateId(),
                 userId: userId,
-                dateIso: dateIso,
+                dateIso: finalDateIso,
                 content: {
                     format: 'tiptap-json',
                     body: contentBody,
-                    plainTextSnippet: plainText.substring(0, 100),
+                    plainTextSnippet: cleanText.substring(0, 100),
                 },
                 tags: tags,
                 externalTickets: linkedTicketIds,
@@ -207,6 +221,52 @@ export function useAddLog() {
                     db.logs.get(newLog.id).then(log => {
                         if (log) syncEngine.pushLog(log);
                     });
+                }
+            });
+        },
+    });
+}
+
+export function useUpdateLog() {
+    const queryClient = useQueryClient();
+    const { user } = useAuth();
+    const userId = user ? user.uid : 'guest';
+
+    return useMutation({
+        mutationFn: async ({ id, json, text }) => {
+            const log = await db.logs.get(id);
+            if (!log) throw new Error("Log not found");
+
+            const { cleanText, tags, performanceCategories, linkedTicketIds } = await processLogMetadata(text || '', userId);
+
+            const updatedLog = {
+                ...log,
+                content: {
+                    ...log.content,
+                    body: json,
+                    plainTextSnippet: cleanText.substring(0, 100),
+                },
+                tags: tags,
+                externalTickets: linkedTicketIds,
+                metadata: {
+                    ...log.metadata,
+                    performanceCategories: performanceCategories
+                },
+                syncState: {
+                    isSynced: false,
+                    lastModified: Date.now()
+                }
+            };
+
+            await db.logs.put(updatedLog);
+            return updatedLog;
+        },
+        onSuccess: async (updatedLog) => {
+            queryClient.invalidateQueries(['logs']);
+            // Trigger Cloud Sync
+            import('../lib/sync').then(({ syncEngine }) => {
+                if (syncEngine.userId) {
+                    syncEngine.pushLog(updatedLog);
                 }
             });
         },

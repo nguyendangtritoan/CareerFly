@@ -1,11 +1,11 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Trash2, Star } from 'lucide-react'
 import { cn } from '../lib/utils'
 import Mention from '@tiptap/extension-mention'
 import PlaceholderNode from '../lib/extensions/PlaceholderNode'
-import { useToggleLogStar } from '../hooks/useLogs'
+import { useToggleLogStar, useUpdateLog } from '../hooks/useLogs'
 
 const PerformanceMention = Mention.extend({
     name: 'performanceMention',
@@ -16,9 +16,12 @@ export default function LogEntry({ log, onDelete, isManagerMode = false }) {
     const isHighImpact = metadata?.impact === 'high' || metadata?.isMajorWin;
     const isStarred = metadata?.isStarred || false;
     const toggleStar = useToggleLogStar();
+    const updateLog = useUpdateLog();
+
+    const [isEditing, setIsEditing] = useState(false);
 
     const editor = useEditor({
-        editable: false,
+        editable: false, // Initially false
         extensions: [
             StarterKit,
             PlaceholderNode,
@@ -48,12 +51,43 @@ export default function LogEntry({ log, onDelete, isManagerMode = false }) {
         }
     });
 
-    // Update logic if content changes
+    // Update logic if content changes externally, but ONLY if not editing
     useEffect(() => {
-        if (editor && content.body) {
+        if (editor && content.body && !isEditing) {
             editor.commands.setContent(content.body);
         }
-    }, [content, editor]);
+    }, [content, editor, isEditing]);
+
+    // Handle Edit Mode Toggle
+    useEffect(() => {
+        if (editor) {
+            editor.setEditable(isEditing);
+        }
+    }, [isEditing, editor]);
+
+    const handleSave = () => {
+        if (!editor) return;
+        const json = editor.getJSON();
+        const text = editor.getText();
+
+        updateLog.mutate({
+            id: log.id,
+            json,
+            text
+        }, {
+            onSuccess: () => {
+                setIsEditing(false);
+            }
+        });
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        // Reset content
+        if (editor) {
+            editor.commands.setContent(content.body);
+        }
+    };
 
     return (
         <div className={cn(
@@ -91,16 +125,36 @@ export default function LogEntry({ log, onDelete, isManagerMode = false }) {
                 </div>
 
                 {!isManagerMode && (
-                    <button onClick={() => onDelete(log.id)} className="opacity-0 group-hover:opacity-100 text-zinc-500 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 transition-all p-1">
-                        <Trash2 size={12} />
-                    </button>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {!isEditing ? (
+                            <>
+                                <button onClick={() => setIsEditing(true)} className="text-zinc-500 hover:text-action-primary transition-all p-1 mr-1">
+                                    Edit
+                                </button>
+                                <button onClick={() => onDelete(log.id)} className="text-zinc-500 hover:text-red-500 transition-all p-1">
+                                    <Trash2 size={12} />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={handleSave} className="text-green-600 hover:text-green-700 font-bold transition-all p-1 mr-1">
+                                    Save
+                                </button>
+                                <button onClick={handleCancel} className="text-zinc-500 hover:text-zinc-700 transition-all p-1">
+                                    Cancel
+                                </button>
+                            </>
+                        )}
+
+                    </div>
                 )}
             </div>
 
             <div className={cn(
                 "p-4 rounded-lg border border-border-subtle dark:border-zinc-800 bg-surface dark:bg-zinc-900/50 shadow-sm",
                 isManagerMode && isHighImpact && "border-2 border-amber-500/50 bg-amber-500/5 shadow-amber-500/10",
-                isManagerMode && "p-6"
+                isManagerMode && "p-6",
+                isEditing && "ring-2 ring-action-primary/20 border-action-primary"
             )}>
                 <EditorContent editor={editor} />
             </div>
